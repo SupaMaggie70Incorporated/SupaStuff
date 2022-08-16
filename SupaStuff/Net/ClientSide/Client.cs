@@ -1,0 +1,138 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net.Sockets;
+using System.Net;
+using SupaStuff.Net.ServerSide;
+using SupaStuff.Net.Packets;
+using SupaStuff.Net.Packets.BuiltIn;
+
+//Temporary fix xd
+using Main = SupaStuff.Net.NetMain;
+
+
+namespace SupaStuff.Net.ClientSide
+{
+    public class Client : IDisposable
+    {
+        public TcpClient tcpClient { get; private set; }
+        public NetworkStream stream { get; private set; }
+        public static Client Instance { get; private set; }
+        public bool IsLocal { get; private set; }
+        public bool IsActive { get; internal set; }
+        public LocalClientConnection localConnection { get; private set; }
+        public PacketStream packetStream { get; private set; }
+public readonly int port;
+        /// <summary>
+        /// Create a client and attempt to connect to server
+        /// </summary>
+        /// <param name="ip"></param>
+        public Client(IPAddress ip,int port,byte[] password)
+        {
+            IsLocal = false;
+            IsActive = true;
+            //External client
+            Instance = this;
+            //New client to connect with
+            tcpClient = new TcpClient();
+this.port = port;
+            /*
+            //How long to wait
+            TimeSpan timeSpan = TimeSpan.FromSeconds(1);
+            //Try to connect to server
+            var result = tcpClient.BeginConnect(ip, Server.port, null, null);
+            //Wait a second, if it hasnt worked it cant connect
+            var success = result.AsyncWaitHandle.WaitOne(timeSpan);
+            if (!success)
+            {
+                return;
+            }
+            */
+            tcpClient.Connect(new IPEndPoint(ip, port));
+            //Get the stream
+            stream = tcpClient.GetStream();
+            packetStream = new PacketStream(stream, false, () => { Dispose();return false; });
+            packetStream.OnDisconnected += Dispose;
+            Main.ClientLogger.Log("Client started!");
+            SendPacket(new C2SWelcomePacket());
+
+        }
+        /// <summary>
+        /// Create a local client connection
+        /// </summary>
+        /// <param name="localconnection"></param>
+        public Client(LocalClientConnection localconnection)
+        {
+            //Local client
+            this.IsLocal = true;
+            IsActive = true;
+            Instance = this;
+            localConnection = localconnection;
+
+        }
+        /// <summary>
+        /// Send a packet over the stream
+        /// </summary>
+        /// <param name="packet"></param>
+        public void SendPacket(Packet packet)
+        {
+            if (IsLocal) localConnection.RecievePacket(packet);
+            else packetStream.SendPacket(packet);
+        }
+        public void RecievePacket(Packet packet)
+        {
+            packet.Execute(null);
+        }
+        /// <summary>
+        /// Try to recieve and write packets
+        /// </summary>
+        public void Update()
+        {
+            if (!IsLocal)
+            {
+                packetStream.Update();
+                if (!tcpClient.Connected) Dispose();
+            }
+        }
+        public delegate void OnMessage(Packet packet);
+        public event OnMessage onMessage;
+        /// <summary>
+        /// GC assister
+        /// </summary>
+        public void Dispose()
+        {
+            if (!IsActive) return;
+            IsActive = false;
+            Main.ClientLogger.Log("Client closed!");
+            Instance = null;
+            stream.Close();
+            stream.Dispose();
+            tcpClient.Close();
+            tcpClient.Dispose();
+            packetStream.Dispose();
+        }
+        public void Disconnect()
+        {
+            lock (packetStream.packetsToWrite)
+            {
+                packetStream.packetsToWrite.Clear();
+                packetStream.packetsToWrite.Add(new C2SDisconnectPacket());
+            }
+
+        }
+        public void Disconnect(string message)
+        {
+            lock (packetStream.packetsToWrite)
+            {
+                packetStream.packetsToWrite.Clear();
+                packetStream.packetsToWrite.Add(new C2SDisconnectPacket(message));
+            }
+        }
+        public void HardDisconnect()
+        {
+            Dispose();
+        }
+    }
+}

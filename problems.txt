@@ -1,0 +1,154 @@
+[FIELD NAME INVALID] Field <IsUnity>k__BackingField in SupaStuff.Util.Logger does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property IsUnity in SupaStuff.Util.Logger does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field queue in SupaStuff.Util.SupaQueue`1 does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field inactive in SupaStuff.Util.SupaQueue`1 does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field count in SupaStuff.Util.SupaQueue`1 does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property capacity in SupaStuff.Util.SupaQueue`1 does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property index in SupaStuff.Util.SupaQueue`1 does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field _threads in SupaStuff.Util.ThreadManager does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property threads in SupaStuff.Util.ThreadManager does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field hasGottenTypes in SupaStuff.Util.TypeFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field types in SupaStuff.Util.TypeFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field hasGottenMethods in SupaStuff.Util.TypeFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field methods in SupaStuff.Util.TypeFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <host>k__BackingField in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <NetLogger>k__BackingField in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <ServerLogger>k__BackingField in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <ClientLogger>k__BackingField in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property host in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property NetLogger in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property ServerLogger in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property ClientLogger in SupaStuff.Net.NetMain does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field isServer in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field isRunning in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field clientConnection in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field stream in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field customOnError in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetsToWrite in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetsToHandle in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field sendingPacket in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field currentSentPacket in SupaStuff.Net.PacketStream does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field logger in SupaStuff.Net.PacketStream does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field lastCheckedIn in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetHeaderComplete in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetHeader in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetID in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetSize in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetBody in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetBodyIndex in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field OnRecievePacket in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field OnDisconnected in SupaStuff.Net.PacketStream does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field builtinPackets in SupaStuff.Net.PacketStream does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field running in SupaStuff.Net.UpdateThread does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field updateInterval in SupaStuff.Net.UpdateThread does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field timer in SupaStuff.Net.UpdateThread does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field tcpClient in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field stream in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <IsLocal>k__BackingField in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field packetsToWrite in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <IsActive>k__BackingField in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field handshakeStage in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <packetStream>k__BackingField in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <address>k__BackingField in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field connectionStarted in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field finishAuth in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field onMessage in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property IsLocal in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property IsActive in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property packetStream in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property address in SupaStuff.Net.ServerSide.ClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field value__ in SupaStuff.Net.ServerSide.HandshakeStage does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field unstarted in SupaStuff.Net.ServerSide.HandshakeStage does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field complete in SupaStuff.Net.ServerSide.HandshakeStage does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field <client>k__BackingField in SupaStuff.Net.ServerSide.LocalClientConnection does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property client in SupaStuff.Net.ServerSide.LocalClientConnection does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <listener>k__BackingField in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field port in SupaStuff.Net.ServerSide.Server does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field <IsActive>k__BackingField in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <localConnection>k__BackingField in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <connections>k__BackingField in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field maxConnections in SupaStuff.Net.ServerSide.Server does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field OnClientConnected in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <Instance>k__BackingField in SupaStuff.Net.ServerSide.Server does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field password in SupaStuff.Net.ServerSide.Server does not begin with an uppercase letter like it should!
+[PROPERTY NAME INVALID] Property Instance in SupaStuff.Net.ServerSide.Server does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property listener in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property IsActive in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property localConnection in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property connections in SupaStuff.Net.ServerSide.Server does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field isS2C in SupaStuff.Net.Packets.APacket does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field allowDuplicates in SupaStuff.Net.Packets.APacket does not begin with an uppercase letter like it should!
+[METHOD NAME INVALID] Method getMaxTime in class SupaStuff.Net.Packets.Packet begins with a lower case letter even though it is public!
+[FIELD NAME INVALID] Field startTime in SupaStuff.Net.Packets.Packet does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field bytes in SupaStuff.Net.Packets.Packet does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field id in SupaStuff.Net.Packets.Packet does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field message in SupaStuff.Net.Packets.PacketException does not begin with an uppercase letter like it should!
+[METHOD NAME INVALID] Method stringConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method byteArrayConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method intConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method shortConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method longConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method byteConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method uintConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method ushortConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method ulongConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method sbyteConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method stringFrom in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method byteArrayFrom in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method intFrom in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method shortFrom in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method longConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method byteConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method uintConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method ushortConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method ulongConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[METHOD NAME INVALID] Method sbyteConvert in class SupaStuff.Net.Packets.Util.Bytifier begins with a lower case letter even though it is public!
+[FIELD NAME INVALID] Field bytifyFunctions in SupaStuff.Net.Packets.Util.Bytifier does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field debytifyFunctions in SupaStuff.Net.Packets.Util.Bytifier does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field type in SupaStuff.Net.Packets.Util.PacketTypeInfo does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field constructor in SupaStuff.Net.Packets.Util.PacketTypeInfo does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field isRightLength in SupaStuff.Net.Packets.Util.PacketTypeInfo does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field c2sTypes in SupaStuff.Net.Packets.Util.PacketTypesFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field s2cTypes in SupaStuff.Net.Packets.Util.PacketTypesFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field argTypes in SupaStuff.Net.Packets.Util.PacketTypesFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field flags in SupaStuff.Net.Packets.Util.PacketTypesFinder does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field message in SupaStuff.Net.Packets.BuiltIn.C2SDisconnectPacket does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field defaultMessage in SupaStuff.Net.Packets.BuiltIn.C2SDisconnectPacket does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field bytes in SupaStuff.Net.Packets.BuiltIn.C2SWelcomePacket does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field message in SupaStuff.Net.Packets.BuiltIn.S2CKickPacket does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field defaultMessage in SupaStuff.Net.Packets.BuiltIn.S2CKickPacket does not begin with an uppercase letter like it should!
+[METHOD NAME INVALID] Method updateLoop in class SupaStuff.Net.Example.ExampleDemo begins with a lower case letter even though it is public!
+[FIELD NAME INVALID] Field isRunning in SupaStuff.Net.Example.ExampleDemo does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field testServer in SupaStuff.Net.Example.ExampleDemo does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field client in SupaStuff.Net.Example.ExampleDemo does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field num in SupaStuff.Net.Example.ExamplePacket does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field <tcpClient>k__BackingField in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <stream>k__BackingField in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <IsLocal>k__BackingField in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <IsActive>k__BackingField in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <localConnection>k__BackingField in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <packetStream>k__BackingField in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field port in SupaStuff.Net.ClientSide.Client does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field onMessage in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <Instance>k__BackingField in SupaStuff.Net.ClientSide.Client does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property tcpClient in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property stream in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property Instance in SupaStuff.Net.ClientSide.Client does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property IsLocal in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property IsActive in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property localConnection in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property packetStream in SupaStuff.Net.ClientSide.Client does not begin with "_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <Log>k__BackingField in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <LogContext>k__BackingField in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <LogWarning>k__BackingField in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <LogWarningContext>k__BackingField in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <LogError>k__BackingField in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field <LogErrorContext>k__BackingField in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property Log in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property LogContext in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property LogWarning in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property LogWarningContext in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property LogError in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[PROPERTY NAME INVALID] Property LogErrorContext in SupaStuff.Util.Logger+UnityDebug does not begin with "s_<lower case letter>" like it should!
+[FIELD NAME INVALID] Field b2o in SupaStuff.Net.Packets.Util.Bytifier+AConvert does not begin with an uppercase letter like it should!
+[FIELD NAME INVALID] Field b2o in SupaStuff.Net.Packets.Util.Bytifier+AConvertField does not begin with an uppercase letter like it should!

@@ -1,0 +1,42 @@
+using SupaStuff.Net.ServerSide;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+//Temporary fix xd
+using Main = SupaStuff.Net.NetMain;
+
+namespace SupaStuff.Net.Packets.BuiltIn
+{
+    [APacket(-5662131, false, false)]
+    internal sealed class C2SDisconnectPacket : Packet
+    {
+        public readonly string message;
+        public const string defaultMessage = "We are leaving now, goodbye!";
+        public override byte[] Bytify()
+        {
+            return Encoding.ASCII.GetBytes(message);
+        }
+        public override void Execute(ClientConnection sender)
+        {
+            Main.ServerLogger.Log("Client " + sender.address.ToString() + " disconnected from server for:\n    " + message);
+            sender.Dispose();
+        }
+        public C2SDisconnectPacket() : base(null)
+        {
+            message = defaultMessage;
+        }
+        public C2SDisconnectPacket(byte[] bytes) : base(bytes)
+        {
+            message = Encoding.ASCII.GetString(bytes);
+        }
+        public C2SDisconnectPacket(string message) : base(null)
+        {
+            this.message = message;
+        }
+        public static bool IsAllowedSize(int size) 
+        {
+            return size < 1024;
+        }
+    }
+}
