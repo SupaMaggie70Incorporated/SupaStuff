@@ -5,21 +5,21 @@ using System.Text;
 
 namespace SupaStuff.Net.Packets.BuiltIn
 {
-    [APacket(-194752,false,false)]
+    [APacket(-194752, false, false)]
     internal class C2SBlankPacket : Packet
     {
-        public override byte[] Bytify()
+        protected override byte[] Bytify()
         {
             return new byte[0];
         }
         public override void Execute(ClientConnection sender)
         {
         }
-        public C2SBlankPacket() : base(null)
+        public C2SBlankPacket()
         {
 
         }
-        public C2SBlankPacket(byte[] bytes) : base(null)
+        public C2SBlankPacket(byte[] bytes)
         {
         }
 

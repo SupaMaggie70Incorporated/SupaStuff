@@ -10,10 +10,10 @@ using Main = SupaStuff.Net.NetMain;
 
 namespace SupaStuff.Net.Example
 {
-    [APacket(21245673,true)]
+    [APacket(21245673, true)]
     public class ExamplePacket2 : Packet
     {
-        public override byte[] Bytify()
+        protected override byte[] Bytify()
         {
             return new byte[0];
         }
@@ -21,10 +21,10 @@ namespace SupaStuff.Net.Example
         {
             Main.ServerLogger.Log("S2C packet recieved!");
         }
-        public ExamplePacket2(byte[] bytes) : base(bytes)
+        public ExamplePacket2(byte[] bytes)
         {
         }
-        public ExamplePacket2() : base(null)
+        public ExamplePacket2()
         {
         }
     }

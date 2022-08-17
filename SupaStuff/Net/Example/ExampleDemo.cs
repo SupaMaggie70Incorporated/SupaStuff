@@ -31,12 +31,12 @@ namespace SupaStuff.Net.Example
 
         public ExampleDemo()
         {
-          const int port = 12345;
-          byte[] password = new byte[] {123,45,67,89};
-          Main.Init();
+            const int port = 12345;
+            byte[] password = new byte[] { 123, 45, 67, 89 };
+            Main.Init();
             Main.NetLogger.Log("Initiating Scarry Black Window...");
-            
-            testServer = new Server(4,port,password);
+
+            testServer = new Server(4, port, password);
             /*
             testServer.OnClientConnected += (ClientConnection conn) => {
                 conn.SendPacket(new ExamplePacket2());
@@ -44,10 +44,10 @@ namespace SupaStuff.Net.Example
             */
             Main.NetLogger.Log("Starting Server at\n     " + NetMain.host.ToString() + ":" + testServer.port);
 
-            
+
             Console.ReadKey();
 
-            client = new ClientSide.Client(NetMain.host,port,password);
+            client = new ClientSide.Client(NetMain.host, port, password);
             Main.NetLogger.Log("Client Started");
 
             Task task = new Task(updateLoop);
@@ -74,7 +74,7 @@ namespace SupaStuff.Net.Example
         }
         public void updateLoop()
         {
-            while(isRunning)
+            while (isRunning)
             {
                 client.Update();
                 testServer.Update();
@@ -82,6 +82,6 @@ namespace SupaStuff.Net.Example
             }
         }
 
-        
+
     }
 }

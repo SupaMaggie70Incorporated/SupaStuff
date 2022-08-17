@@ -8,8 +8,6 @@ using System.Net.Sockets;
 using System.Net;
 using SupaStuff.Net.Packets;
 
-//Temporary fix xd
-using Main = SupaStuff.Net.NetMain;
 
 
 namespace SupaStuff.Net.ServerSide
@@ -21,7 +19,7 @@ namespace SupaStuff.Net.ServerSide
         {
             this.IsLocal = true;
             client = new ClientSide.Client(this);
-            Main.ClientLogger.Log("Local client initialized");
+            NetMain.ClientLogger.Log("Local client initialized");
         }
         internal static LocalClientConnection LocalClient()
         {

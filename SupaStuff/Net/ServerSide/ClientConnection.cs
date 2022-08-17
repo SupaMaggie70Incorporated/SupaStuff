@@ -9,8 +9,6 @@ using SupaStuff.Net.Packets;
 using SupaStuff.Net.Packets.BuiltIn;
 using SupaStuff.Math;
 
-//Temporary fix xd
-using Main = SupaStuff.Net.NetMain;
 
 namespace SupaStuff.Net.ServerSide
 {
@@ -40,11 +38,12 @@ namespace SupaStuff.Net.ServerSide
             stream = tcpClient.GetStream();
             packetStream = new PacketStream(stream, true, () => false);
             packetStream.clientConnection = this;
-            packetStream.OnDisconnected += () => {
-                Main.ServerLogger.Log("Kicking " + address + " because they kicked us first and we're mad");
+            packetStream.OnDisconnected += () =>
+            {
+                NetMain.ServerLogger.Log("Kicking " + address + " because they kicked us first and we're mad");
                 Dispose();
-            } ;
-            packetStream.logger = Main.ServerLogger;
+            };
+            packetStream.logger = NetMain.ServerLogger;
             address = (tcpClient.Client.RemoteEndPoint as IPEndPoint).Address;
             connectionStarted = DateTime.UtcNow;
         }
@@ -73,8 +72,9 @@ namespace SupaStuff.Net.ServerSide
             packetStream.Update();
             if (!finishAuth)
             {
-                if (SupaMath.TimeSince(connectionStarted) > 10) {
-                    Main.ServerLogger.Log("Shutting down connection to " + address + " because they were unable to authorize themselves");
+                if (SupaMath.TimeSince(connectionStarted) > 10)
+                {
+                    NetMain.ServerLogger.Log("Shutting down connection to " + address + " because they were unable to authorize themselves");
                     Dispose();
                 }
             }
@@ -89,11 +89,11 @@ namespace SupaStuff.Net.ServerSide
         {
             if (!IsActive) return;
             IsActive = false;
-            Main.ServerLogger.Log("Connection to client " + address + " terminated");
+            NetMain.ServerLogger.Log("Connection to client " + address + " terminated");
             try
             {
-if(Server.Instance.IsActive)
-                Server.Instance.connections.Remove(this);
+                if (Server.Instance.IsActive)
+                    Server.Instance.connections.Remove(this);
             }
             catch
             {
@@ -113,13 +113,11 @@ if(Server.Instance.IsActive)
         }
         public virtual void Kick(string message)
         {
-            packetStream.packetsToWrite.Clear();
-            packetStream.packetsToWrite.Add(new S2CKickPacket(message));
+            SendPacket(new S2CKickPacket(message));
         }
         public virtual void Kick()
         {
-            packetStream.packetsToWrite.Clear();
-            packetStream.packetsToWrite.Add(new S2CKickPacket());
+            SendPacket(new S2CKickPacket());
         }
     }
     public enum HandshakeStage

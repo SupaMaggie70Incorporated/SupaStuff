@@ -16,8 +16,7 @@ using SupaStuff.Net.Packets.Util;
 using SupaStuff.Util;
 using SupaStuff.Math;
 
-//Temp fix xd
-using YesImHerePacket = SupaStuff.Net.Packets.BuiltIn.C2SBlankPacket;
+
 
 namespace SupaStuff.Net
 {
@@ -28,10 +27,6 @@ namespace SupaStuff.Net
         internal ServerSide.ClientConnection clientConnection = null;
         private NetworkStream stream;
         private Func<bool> customOnError;
-        internal List<Packet> packetsToWrite = new List<Packet>(1024);
-        private List<Packet> packetsToHandle = new List<Packet>(1024);
-        private bool sendingPacket = false;
-        public Packet currentSentPacket;
         public Logger logger = NetMain.NetLogger;
         //Server only
         internal DateTime lastCheckedIn = DateTime.UtcNow;
@@ -87,7 +82,7 @@ namespace SupaStuff.Net
                         packetBodyIndex = 0;
 
 
-                        if(isServer)
+                        if (isServer)
                         {
                             if (!PacketTypesFinder.c2sTypes[packetID].isRightLength(packetSize))
                             {
@@ -127,7 +122,8 @@ namespace SupaStuff.Net
                     packetBodyIndex += amountRead;
                     return false;
                 }
-            }catch
+            }
+            catch
             {
                 logger.Log("Error recieving packet, disconnecting");
                 onError();
@@ -140,22 +136,18 @@ namespace SupaStuff.Net
         /// </summary>
         private void CheckForPackets()
         {
-if(!isRunning) return;
-            while (true)
+            if (!isRunning) return;
+            Packet packet;
+            while (TryGetPacket(out packet))
             {
-                Packet packet = null;
-                if (TryGetPacket(out packet))
-                {
-                    packetsToHandle.Add(packet);
-                }
-                else break;
+                HandleIncomingPacket(packet);
             }
         }
         private static readonly Type[] builtinPackets = new Type[]
         {
             typeof(C2SDisconnectPacket),
             typeof(S2CKickPacket),
-            typeof(YesImHerePacket),
+            typeof(C2SBlankPacket),
             typeof(C2SWelcomePacket)
         };
         /// <summary>
@@ -164,17 +156,16 @@ if(!isRunning) return;
         /// <param name="packet"></param>
         public void HandleIncomingPacket(Packet packet)
         {
-            try 
-            { 
+            try
+            {
                 Type type = packet.GetType();
-                if(isServer && !clientConnection.finishAuth && type != typeof(C2SWelcomePacket))
+                if (isServer && !clientConnection.finishAuth && type != typeof(C2SWelcomePacket))
                 {
                     logger.Log("We recieved a packet other than the C2SWelcomePacket as our first packet, so fuck off hacker");
                     onError();
                     Dispose();
                     return;
                 }
-                packetsToHandle.Remove(packet);
                 if (!builtinPackets.Contains(type))
                 {
                     RecievePacketEvent(packet);
@@ -201,7 +192,7 @@ if(!isRunning) return;
             {
                 Packet packet = Packet.GetPacket(packetID, packetBody, !isServer);
                 PacketCleanup();
-                if(isServer) lastCheckedIn = DateTime.UtcNow;
+                if (isServer) lastCheckedIn = DateTime.UtcNow;
                 return packet;
             }
             catch
@@ -238,149 +229,32 @@ if(!isRunning) return;
             this.isServer = isServer;
             customOnError = onError;
         }
-        /// <summary>
-        /// Begin asynchronous sending of packet queue
-        /// </summary>
-        private void BeginSendPacket()
-        {
-            sendingPacket = true;
-byte[] bytes;
-            try
-            {
-                lock(packetsToWrite)
-                {
-                  currentSentPacket = packetsToWrite[0];
-                  packetsToWrite.RemoveAt(0);
-                }
-                try
-                {
-                  currentSentPacket.bytes = currentSentPacket.Bytify();
-                  bytes = currentSentPacket.GenerateHeader();
-                }
-                catch (Exception ex)
-                {
-                    logger.Log("Error encoding packet of type " + currentSentPacket.GetType() + " : undisclosed error");
-                    onError();
-                    Dispose();
-                    return;
-                }
-            }catch
-            {
-                logger.Log("We had an error sending a packet(BeginSendPacket), potentially due to unsafe threading, if you encounter this and it does not happen consistently tell SupaMaggie70 because its kinda weird, pls dont contact me tho until you've done alot of research. Of course if this happens once and never again then tell me.");
-                onError();
-                Dispose();
-                return;
-            }
-                stream.BeginWrite(bytes, 0, bytes.Length, new AsyncCallback(MidSendPacket), null);
-        }
-        private void MidSendPacket(IAsyncResult ar) 
-        {
-stream.BeginWrite(currentSentPacket.bytes,0,currentSentPacket.bytes.Length,new AsyncCallback(EndSendPacket),null);
-        }
-        /// <summary>
-        ///  Finish sending queue of packets, or keep going, up to you.
-        /// </summary>
-        /// <param name="ar"></param>
-        private void EndSendPacket(IAsyncResult ar)
-        {
-            lastCheckedIn = DateTime.UtcNow;
-            try
-            {
-                stream.EndWrite(ar);
-                if(currentSentPacket.GetType() == typeof(S2CKickPacket))
-                {
-                    logger.Log("We disconnected because we sent a kick packet and theyre no longer welcome");
-                    onError();
-                    Dispose();
-                    return;
-                }
-                else if(currentSentPacket.GetType() == typeof(C2SDisconnectPacket))
-                {
-                    logger.Log("We are disconneting and just finished sending the packet so byeeeee");
-                    onError();
-                    Dispose();
-                }
-                if (packetsToWrite.Count > 0)
-                {
-                    BeginSendPacket();
-                }
-                else
-                {
-                    sendingPacket = false;
-                    currentSentPacket = null;
-                }
-                
-                if (!isServer)
-                {
-                    lastCheckedIn = DateTime.UtcNow;
-                }
-            }catch
-            {
-                logger.Log("We had an error sending a packet(EndSendPacket), potentially due to unsafe threading, if you encounter this and it does not happen consistently tell SupaMaggie70 because its kinda weird");
-                onError();
-                Dispose();
-            }
-
-        }
 
         /// <summary>
         /// Takes the packet queue, iterates through them, removes them if stale, otherwise processes them
         /// </summary>
         public void Update()
         {
-            try
+            DateTime now = DateTime.UtcNow;
+
+
+
+
+
+            if (!isServer && SupaMath.TimeBetween(lastCheckedIn, now) > 5)
             {
-                DateTime now = DateTime.UtcNow;
-                //Remove old packets
-
-                for (int i = 0; i < packetsToWrite.Count; i++)
-                {
-                    Packet packet = packetsToWrite[i];
-                    DateTime startTime = packet.startTime;
-                    if (SupaMath.TimeBetween(packet.startTime,now) > 1)
-                    {
-                        packetsToWrite.RemoveAt(i);
-                        i--;
-                    }
-                }
-
-
-
-                //Check for new packets to recieve
-                CheckForPackets();
-
-                //Start sending a packet if you can
-                StartSendTask();
-                //Handle incoming packets
-                Packet[] packets = packetsToHandle.ToArray();
-                foreach (Packet packet in packets)
-                {
-                    HandleIncomingPacket(packet);
-                }
-
-                if (!isServer && SupaMath.TimeBetween(lastCheckedIn,now) > 5)
-                {
-                    packetsToWrite.Insert(0, new YesImHerePacket());
-                    lastCheckedIn = DateTime.UtcNow;
-                }
-                if (isServer && SupaMath.TimeBetween(lastCheckedIn,now) > MaxUncheckedTime)
-                {
-                    logger.Log("We kicked a client because they waited too long to check in");
-                    onError();
-                    Dispose();
-                }
+                SendPacket(new C2SBlankPacket());
+                lastCheckedIn = now;
             }
-            catch(Exception e)
+            if (isServer && SupaMath.TimeBetween(lastCheckedIn, now) > MaxUncheckedTime)
             {
-                logger.Log("We had an undisclosed error updating, so now we're gonna leave");
+                logger.Log("We kicked a client because they waited too long to check in");
+                onError();
                 Dispose();
             }
-        }
-        private void StartSendTask() {
-            if (!sendingPacket && packetsToWrite.Count > 0)
-            {
-                BeginSendPacket();
-            }
+
+            //Check for new packets to recieve
+            CheckForPackets();
         }
         /// <summary>
         /// Called to ease up the Garbage collection by disposing manually
@@ -390,54 +264,14 @@ stream.BeginWrite(currentSentPacket.bytes,0,currentSentPacket.bytes.Length,new A
             DisconnectedEvent();
         }
         /// <summary>
-        /// Add the packet to the queue, to be sent when its ready
+        /// Send a packet
         /// </summary>
         /// <param name="packet"></param>
         public void SendPacket(Packet packet)
         {
-            Type packetType = packet.GetType();
-            APacket attribute = packetType.GetCustomAttribute<APacket>();
-            if(!attribute.allowDuplicates)
-            {
-                foreach(Packet _packet in packetsToWrite)
-                {
-                    if(_packet.GetType() == packetType)
-                    {
-                        _packet.startTime = DateTime.UtcNow;
-                        return;
-                    }
-                }
-            }
-            if (packetsToWrite.Count + 1 == packetsToWrite.Capacity)
-            {
-                //Too many packets in queue!
-                logger.Log("Too many packets in queue, we're out!");
-                onError();
-                try
-                {
-                    Dispose();
-                } catch
-                {
+            stream.Write(packet.GenerateHeader(), 0, 8);
+            stream.Write(packet.data, 0, packet.data.Length);
 
-                }
-            }
-            try
-            {
-                if (builtinPackets.Contains(packetType))
-                {
-                    packet.startTime = DateTime.UtcNow;
-                    packetsToWrite.Insert(0, packet);
-                    return;
-                }
-                else
-                {
-                    packet.startTime = DateTime.UtcNow;
-                    packetsToWrite.Add(packet);
-                }
-            }catch
-            {
-
-            }
         }
         /// <summary>
         /// Delegate function for when you recieve a packet
@@ -460,7 +294,7 @@ stream.BeginWrite(currentSentPacket.bytes,0,currentSentPacket.bytes.Length,new A
             if (!isRunning) return;
             isRunning = false;
             OnDisconnected?.Invoke();
-            if(isServer)
+            if (isServer)
             {
                 NetMain.ServerLogger.Log("Client decided to disconnect!");
             }

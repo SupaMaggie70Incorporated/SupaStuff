@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-//Temporary fix xd
-using Main = SupaStuff.Net.NetMain;
 
 namespace SupaStuff.Net.Packets.BuiltIn
 {
@@ -13,28 +11,24 @@ namespace SupaStuff.Net.Packets.BuiltIn
     {
         public readonly string message;
         public const string defaultMessage = "We are leaving now, goodbye!";
-        public override byte[] Bytify()
+        protected override byte[] Bytify()
         {
             return Encoding.ASCII.GetBytes(message);
         }
         public override void Execute(ClientConnection sender)
         {
-            Main.ServerLogger.Log("Client " + sender.address.ToString() + " disconnected from server for:\n    " + message);
+            NetMain.ServerLogger.Log("Client " + sender.address.ToString() + " disconnected from server for:\n    " + message);
             sender.Dispose();
         }
-        public C2SDisconnectPacket() : base(null)
-        {
-            message = defaultMessage;
-        }
-        public C2SDisconnectPacket(byte[] bytes) : base(bytes)
+        public C2SDisconnectPacket(byte[] bytes)
         {
             message = Encoding.ASCII.GetString(bytes);
         }
-        public C2SDisconnectPacket(string message) : base(null)
+        public C2SDisconnectPacket(string message = defaultMessage)
         {
             this.message = message;
         }
-        public static bool IsAllowedSize(int size) 
+        public static bool IsAllowedSize(int size)
         {
             return size < 1024;
         }

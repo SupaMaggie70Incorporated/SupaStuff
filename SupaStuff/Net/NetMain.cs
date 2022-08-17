@@ -12,7 +12,7 @@ namespace SupaStuff.Net
     {
         public static void GetHost()
         {
-            var hosts = Dns.GetHostEntry(Dns.GetHostName());    
+            var hosts = Dns.GetHostEntry(Dns.GetHostName());
             foreach (var ip in hosts.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
@@ -23,10 +23,10 @@ namespace SupaStuff.Net
             }
         }
         public static IPAddress host { get; private set; }
-      
-        public static Logger NetLogger { get;private set; }
-        public static Logger ServerLogger { get;private set; }
-        public static Logger ClientLogger { get;private set; }
+
+        public static Logger NetLogger { get; private set; }
+        public static Logger ServerLogger { get; private set; }
+        public static Logger ClientLogger { get; private set; }
         public static void Init()
         {
             NetLogger = Logger.GetLogger("Net/Main");
@@ -38,11 +38,11 @@ namespace SupaStuff.Net
         }
         public static void Update()
         {
-            if(ServerSide.Server.Instance != null)
+            if (ServerSide.Server.Instance != null)
             {
                 ServerSide.Server.Instance.Update();
             }
-            if(ClientSide.Client.Instance != null)
+            if (ClientSide.Client.Instance != null)
             {
                 ClientSide.Client.Instance.Update();
             }

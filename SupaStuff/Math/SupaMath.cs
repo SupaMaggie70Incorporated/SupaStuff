@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace SupaStuff.Math
 {
@@ -10,7 +11,7 @@ namespace SupaStuff.Math
         {
             return DateTime.UtcNow.Subtract(time).TotalSeconds;
         }
-        public static double TimeBetween(DateTime first,DateTime second)
+        public static double TimeBetween(DateTime first, DateTime second)
         {
             return second.Subtract(first).TotalSeconds;
         }
@@ -24,6 +25,10 @@ namespace SupaStuff.Math
                 if (b1[i] != b2[i]) return false;
             }
             return true;
+        }
+        public static Vector3 Average(Vector3 vec1, Vector3 vec2)
+        {
+            return (vec1 + vec2) / 2;
         }
     }
 }

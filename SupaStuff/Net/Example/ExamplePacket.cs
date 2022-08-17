@@ -7,31 +7,30 @@ using SupaStuff.Net.Packets;
 using SupaStuff.Net.ServerSide;
 
 
-using Main = SupaStuff.Net.NetMain;
 
 namespace SupaStuff.Net.Example
 {
-    [APacket(1123453 , false)]
+    [APacket(1123453, false)]
     public class ExamplePacket : Packet
     {
         public short num;
         public override void Execute(ClientConnection sender)
         {
-            Main.NetLogger.Log("Number: " + num.ToString());
+            NetMain.NetLogger.Log("Number: " + num.ToString());
             return;
         }
-        public override byte[] Bytify()
+        protected override byte[] Bytify()
         {
             byte[] data = new byte[2];
-            byte[] shortbytes =  BitConverter.GetBytes(num);
+            byte[] shortbytes = BitConverter.GetBytes(num);
             Buffer.BlockCopy(shortbytes, 0, data, 0, 2);
             return data;
         }
-        public ExamplePacket(byte[] bytes) : base(bytes)
+        public ExamplePacket(byte[] bytes)
         {
             num = BitConverter.ToInt16(bytes, 0);
         }
-        public ExamplePacket(short num) : base(null)
+        public ExamplePacket(short num)
         {
             this.num = num;
         }

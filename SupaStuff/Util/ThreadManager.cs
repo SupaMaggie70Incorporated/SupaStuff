@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System;
 namespace SupaStuff.Util
 {
-[Obsolete]
+    [Obsolete]
     internal static class ThreadManager
     {
         public static List<Thread> threads
@@ -30,7 +30,7 @@ namespace SupaStuff.Util
         private static void threadStart(Action action)
         {
             action();
-            if(_threads.Contains(Thread.CurrentThread)) threads.Remove(Thread.CurrentThread);
+            if (_threads.Contains(Thread.CurrentThread)) threads.Remove(Thread.CurrentThread);
         }
     }
 }

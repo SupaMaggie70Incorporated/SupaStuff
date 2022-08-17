@@ -8,8 +8,6 @@ using System.Net.Sockets;
 
 using SupaStuff.Net.Packets;
 
-//Temporary fix xd
-using Main = SupaStuff.Net.NetMain;
 
 namespace SupaStuff.Net.ServerSide
 {
@@ -23,22 +21,22 @@ namespace SupaStuff.Net.ServerSide
         public List<ClientConnection> connections { get; private set; }
         public readonly int maxConnections;
         public readonly byte[] Password;
-        public Server(int maxConnections,int port,byte[] password)
+        public Server(int maxConnections, int port, byte[] password)
         {
-this.Password = password;
-this.port = port;
+            this.Password = password;
+            this.port = port;
             IsActive = true;
             Instance = this;
             this.maxConnections = maxConnections;
             connections = new List<ClientConnection>(maxConnections);
-            listener = new TcpListener(Main.host, port);
+            listener = new TcpListener(NetMain.host, port);
             StartListening();
-            Main.ServerLogger.Log("Server started");
+            NetMain.ServerLogger.Log("Server started");
             listener.BeginAcceptTcpClient(new System.AsyncCallback(ClientConnected), null);
-            Main.ServerLogger.Log("Accepting tcp client");
+            NetMain.ServerLogger.Log("Accepting tcp client");
             localConnection = ClientConnection.LocalClient();
             connections.Add(localConnection);
-            Main.NetLogger.Log("Server started!");
+            NetMain.NetLogger.Log("Server started!");
         }
         public void StartListening()
         {
@@ -54,25 +52,26 @@ this.port = port;
             for (int i = 0; i < connections.Count; i++)
             {
                 ClientConnection connection = connections[i];
-                if(connection == null)
+                if (connection == null)
                 {
                     connections.RemoveAt(i);
                     i--;
                 }
-                else if(!IsActive)
+                else if (!IsActive)
                 {
-                    Main.ServerLogger.Log("Kicking " + connection.address + " because they should've already been kicked");
+                    NetMain.ServerLogger.Log("Kicking " + connection.address + " because they should've already been kicked");
                     connections[i].Dispose();
                     connections.RemoveAt(i);
                     i--;
                     continue;
                 }
-                try { 
+                try
+                {
                     connection.Update();
                 }
                 catch
                 {
-                    Main.ServerLogger.Log("Kicking " + connection + " because they were unable to update properly");
+                    NetMain.ServerLogger.Log("Kicking " + connection + " because they were unable to update properly");
                     connection.Dispose();
                 }
             }
@@ -82,7 +81,7 @@ this.port = port;
             try
             {
                 ClientConnection connection = new ClientConnection(listener.EndAcceptTcpClient(ar));
-                Main.ServerLogger.Log("Attempted connection from " + connection.address + "!");
+                NetMain.ServerLogger.Log("Attempted connection from " + connection.address + "!");
                 if (connections.Count + 1 < maxConnections)
                 {
                     connections.Add(connection);
@@ -90,13 +89,14 @@ this.port = port;
                 }
                 else
                 {
-                    Main.ServerLogger.Log("Rejected connection from " + connection.address + " because we already have the max number of concurrent connections, " + maxConnections + "!");
+                    NetMain.ServerLogger.Log("Rejected connection from " + connection.address + " because we already have the max number of concurrent connections, " + maxConnections + "!");
                     connection.Dispose();
                 }
                 listener.BeginAcceptTcpClient(new System.AsyncCallback(ClientConnected), null);
-            }catch
+            }
+            catch
             {
-                if(this != null)
+                if (this != null)
                 {
                     Dispose();
                 }
@@ -104,15 +104,15 @@ this.port = port;
         }
         public void Dispose()
         {
-if(!IsActive) return;
-IsActive = false;
-//List<ClientConnection> connections = this.connections;
-//this.connections = null;
+            if (!IsActive) return;
+            IsActive = false;
+            //List<ClientConnection> connections = this.connections;
+            //this.connections = null;
             foreach (var connection in connections)
             {
                 try
                 {
-                    Main.ServerLogger.Log("Closing connection to " + connection.address + " because we are shutting down the server");
+                    NetMain.ServerLogger.Log("Closing connection to " + connection.address + " because we are shutting down the server");
                     connection.Dispose();
                 }
                 catch
@@ -123,7 +123,7 @@ IsActive = false;
             listener.Stop();
             Instance = null;
             connections.Clear();
-            Main.NetLogger.Log("Closing server");
+            NetMain.NetLogger.Log("Closing server");
         }
         public event Action<ClientConnection> OnClientConnected;
         private void ClientConnectedEvent(ClientConnection connection)
@@ -132,8 +132,8 @@ IsActive = false;
             OnClientConnected.Invoke(connection);
         }
         public void SendToAll(Packet packet)
-        { 
-            foreach(ClientConnection connection in connections) 
+        {
+            foreach (ClientConnection connection in connections)
             {
                 connection.SendPacket(packet);
             }
@@ -143,9 +143,9 @@ IsActive = false;
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="message"></param>
-        public void Kick(ClientConnection connection,string message)
+        public void Kick(ClientConnection connection, string message)
         {
-            Main.NetLogger.Log("Kicking " + connection.address + " for reason: " + message);
+            NetMain.NetLogger.Log("Kicking " + connection.address + " for reason: " + message);
             connection.Kick(message);
         }
         /// <summary>
@@ -154,9 +154,9 @@ IsActive = false;
         /// <param name="connection"></param>
         public void Kick(ClientConnection connection)
         {
-            Main.ServerLogger.Log("Kicking " + connection.address + " because we want to kick him idk");
+            NetMain.ServerLogger.Log("Kicking " + connection.address + " because we want to kick him idk");
             connection.Dispose();
-            
+
         }
         /// <summary>
         /// Create a new local connection to the server
@@ -164,7 +164,7 @@ IsActive = false;
         /// <returns></returns>
         public LocalClientConnection MakeLocalConnection()
         {
-            if (connections.Count + 1== maxConnections) return null;
+            if (connections.Count + 1 == maxConnections) return null;
             LocalClientConnection connection = LocalClientConnection.LocalClient();
             connections.Add(connection);
             return connection;

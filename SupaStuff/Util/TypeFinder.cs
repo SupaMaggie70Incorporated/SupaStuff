@@ -37,7 +37,8 @@ namespace SupaStuff.Util
                     try
                     {
                         types[index++] = _types[j];
-                    }catch
+                    }
+                    catch
                     {
                         break;
                     }

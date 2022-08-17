@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SupaStuff.Util
 {
@@ -24,35 +25,17 @@ namespace SupaStuff.Util
             /// <param name="message"></param>
             public delegate void LogDel(object message);
             /// <summary>
-            /// Delegate for unity based logging with context
-            /// </summary>
-            /// <param name="message"></param>
-            /// <param name="context"></param>
-            public delegate void LogDelContext(object message,object context);
-            /// <summary>
             /// Logs the message
             /// </summary>
             public static LogDel Log { get; internal set; }
-            /// <summary>
-            /// Logs the message with context
-            /// </summary>
-            public static LogDelContext LogContext { get; internal set; }
             /// <summary>
             /// Logs the warning
             /// </summary>
             public static LogDel LogWarning { get; internal set; }
             /// <summary>
-            /// Logs the warning with context
-            /// </summary>
-            public static LogDelContext LogWarningContext { get; internal set; }
-            /// <summary>
             /// Logs the error
             /// </summary>
             public static LogDel LogError { get; internal set; }
-            /// <summary>
-            /// Logs the error with context
-            /// </summary>
-            public static LogDelContext LogErrorContext { get; internal set; }
         }
         public static bool IsUnity { get; private set; }
         /// <summary>
@@ -76,14 +59,11 @@ namespace SupaStuff.Util
         /// For use in unity projects. Use SupaStuff.Unity.Main.Init instead of doing this yourself.
         /// </summary>
         /// <param name="debug"></param>
-        public static void SetUnity(UnityDebug.LogDel log,UnityDebug.LogDelContext logContext, UnityDebug.LogDel warn, UnityDebug.LogDelContext warnContext, UnityDebug.LogDel error, UnityDebug.LogDelContext errorContext)
+        public static void SetUnity()
         {
-            UnityDebug.Log = log;
-            UnityDebug.LogContext = logContext;
-            UnityDebug.LogWarning = warn;
-            UnityDebug.LogError = error;
-            UnityDebug.LogErrorContext = errorContext;
-            UnityDebug.LogWarningContext = warnContext;
+            UnityDebug.Log = Debug.Log;
+            UnityDebug.LogWarning = Debug.LogWarning;
+            UnityDebug.LogError = Debug.LogError;
             IsUnity = true;
         }
         /// <summary>
@@ -122,7 +102,7 @@ namespace SupaStuff.Util
         public void Warn(object contents)
         {
             string message = "[" + Name + "] " + contents.ToString();
-            if (IsUnity) UnityDebug.LogWarning("[WARNING]"+message);
+            if (IsUnity) UnityDebug.LogWarning("[WARNING]" + message);
             else Console.WriteLine(message);
         }
         /// <summary>
@@ -132,38 +112,8 @@ namespace SupaStuff.Util
         public void Error(object contents)
         {
             string message = "[" + Name + "] " + contents.ToString();
-            if (IsUnity) UnityDebug.LogError("[ERROR]"+message);
+            if (IsUnity) UnityDebug.LogError("[ERROR]" + message);
             else Console.WriteLine(message);
-        }
-        /// <summary>
-        /// Logs the message with context(unity only)
-        /// </summary>
-        /// <param name="contents"></param>
-        /// <param name="context"></param>
-        public void Log(object contents, object context)
-        {
-            if (!IsUnity) throw LogException.NotUnity();
-            UnityDebug.LogContext("[" + Name + "] " + contents.ToString(), context);
-        }
-        /// <summary>
-        /// Logs the warning with context(unity only)
-        /// </summary>
-        /// <param name="contents"></param>
-        /// <param name="context"></param>
-        public void Warn(object contents, object context)
-        {
-            if (!IsUnity) throw LogException.NotUnity();
-            UnityDebug.LogWarningContext("[WARNING][" + Name + "] " + contents.ToString(), context);
-        }
-        /// <summary>
-        /// Logs the error with context(unity only)
-        /// </summary>
-        /// <param name="contents"></param>
-        /// <param name="context"></param>
-        public void Error(object contents, object context)
-        {
-            if (!IsUnity) throw LogException.NotUnity();
-            UnityDebug.LogErrorContext("[ERROR][" + Name + "] " + contents.ToString(), context);
         }
     }
 }

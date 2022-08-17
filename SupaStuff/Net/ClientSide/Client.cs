@@ -9,8 +9,6 @@ using SupaStuff.Net.ServerSide;
 using SupaStuff.Net.Packets;
 using SupaStuff.Net.Packets.BuiltIn;
 
-//Temporary fix xd
-using Main = SupaStuff.Net.NetMain;
 
 
 namespace SupaStuff.Net.ClientSide
@@ -24,12 +22,12 @@ namespace SupaStuff.Net.ClientSide
         public bool IsActive { get; internal set; }
         public LocalClientConnection localConnection { get; private set; }
         public PacketStream packetStream { get; private set; }
-public readonly int port;
+        public readonly int port;
         /// <summary>
         /// Create a client and attempt to connect to server
         /// </summary>
         /// <param name="ip"></param>
-        public Client(IPAddress ip,int port,byte[] password)
+        public Client(IPAddress ip, int port, byte[] password)
         {
             IsLocal = false;
             IsActive = true;
@@ -37,7 +35,7 @@ public readonly int port;
             Instance = this;
             //New client to connect with
             tcpClient = new TcpClient();
-this.port = port;
+            this.port = port;
             /*
             //How long to wait
             TimeSpan timeSpan = TimeSpan.FromSeconds(1);
@@ -53,9 +51,9 @@ this.port = port;
             tcpClient.Connect(new IPEndPoint(ip, port));
             //Get the stream
             stream = tcpClient.GetStream();
-            packetStream = new PacketStream(stream, false, () => { Dispose();return false; });
+            packetStream = new PacketStream(stream, false, () => { Dispose(); return false; });
             packetStream.OnDisconnected += Dispose;
-            Main.ClientLogger.Log("Client started!");
+            NetMain.ClientLogger.Log("Client started!");
             SendPacket(new C2SWelcomePacket());
 
         }
@@ -105,7 +103,7 @@ this.port = port;
         {
             if (!IsActive) return;
             IsActive = false;
-            Main.ClientLogger.Log("Client closed!");
+            NetMain.ClientLogger.Log("Client closed!");
             Instance = null;
             stream.Close();
             stream.Dispose();
@@ -115,20 +113,11 @@ this.port = port;
         }
         public void Disconnect()
         {
-            lock (packetStream.packetsToWrite)
-            {
-                packetStream.packetsToWrite.Clear();
-                packetStream.packetsToWrite.Add(new C2SDisconnectPacket());
-            }
-
+            SendPacket(new C2SDisconnectPacket());
         }
         public void Disconnect(string message)
         {
-            lock (packetStream.packetsToWrite)
-            {
-                packetStream.packetsToWrite.Clear();
-                packetStream.packetsToWrite.Add(new C2SDisconnectPacket(message));
-            }
+            SendPacket(new C2SDisconnectPacket(message));
         }
         public void HardDisconnect()
         {
