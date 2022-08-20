@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace SupaStuff_Tester;
-public class Program
+namespace SupaStuff_Tester
 {
-    public static void Main()
+    public class Program
     {
-        Console.WriteLine("Hello world!");
+        public static void Main()
+        {
+            Console.WriteLine("Hello world!");
+        }
     }
 }
