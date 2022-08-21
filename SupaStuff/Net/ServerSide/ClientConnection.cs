@@ -106,6 +106,12 @@ namespace SupaStuff.Net.ServerSide
                 packetStream.Dispose();
             }
             IsActive = false;
+            DisposeEvent();
+        }
+        public event Action OnDispose;
+        void DisposeEvent()
+        {
+            if (OnDispose != null) OnDispose.Invoke();
         }
         public virtual void Kick(string message)
         {

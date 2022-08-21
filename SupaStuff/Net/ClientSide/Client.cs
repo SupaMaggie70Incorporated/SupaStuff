@@ -110,6 +110,12 @@ namespace SupaStuff.Net.ClientSide
             tcpClient.Close();
             tcpClient.Dispose();
             packetStream.Dispose();
+            DisposeEvent();
+        }
+        public event Action OnDispose;
+        void DisposeEvent()
+        {
+            if (OnDispose != null) OnDispose.Invoke();
         }
         public void Disconnect()
         {
