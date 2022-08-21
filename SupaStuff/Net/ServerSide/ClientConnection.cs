@@ -18,7 +18,7 @@ namespace SupaStuff.Net.ServerSide
         protected NetworkStream stream;
         public bool IsLocal { get; protected set; }
         protected List<Packet> packetsToWrite = new List<Packet>();
-        public bool IsActive { get; private set; }
+        public bool IsActive { get; protected set; }
         protected HandshakeStage handshakeStage = HandshakeStage.unstarted;
         public PacketStream packetStream { get; protected set; }
         public IPAddress address { get; protected set; }
@@ -92,13 +92,9 @@ namespace SupaStuff.Net.ServerSide
             NetMain.ServerLogger.Log("Connection to client " + address + " terminated");
             try
             {
-                if (Server.Instance.IsActive)
-                    Server.Instance.connections.Remove(this);
+                Server.Instance.connections.Remove(this);
             }
-            catch
-            {
-
-            }
+            catch { }
             if (IsLocal)
             {
             }

@@ -6,7 +6,7 @@ using UnityEngine;
 //https://schneide.blog/2016/07/15/generating-an-icosphere-in-c/
 namespace SupaStuff.Unity
 {
-    internal class IcosphereGenerator
+    public class IcosphereGenerator
     {
         public Mesh mesh;
         private Vector3[] vertices;
@@ -44,16 +44,54 @@ namespace SupaStuff.Unity
             for (int i = 0; i < times; i++)
             {
                 Vector3[] newverts = new Vector3[vertices.Length * 2];
+                int vertIndex = 0;
                 int[] newTriangles = new int[triangles.Length * 4];
-                for (int j = 0; j < triangles.Length / 3; j++)
+                int reps = triangles.Length / 3;
+                Console.WriteLine($"{vertices.Length} : {newverts.Length} : {triangles.Length} : {newTriangles.Length}");
+                for (int j = 0; j < reps; j++)
                 {
-                    newverts[j * 6] = vertices[j * 3];
-                    newverts[j * 6 + 1] = vertices[j * 3 + 1];
-                    newverts[j * 6 + 2] = vertices[j * 3 + 2];
-
-                    newverts[j * 6 + 3] = SupaMath.Average(newverts[j * 6], newverts[j * 6 + 1]).normalized * radius;
-                    newverts[j * 6 + 4] = SupaMath.Average(newverts[j * 6 + 1], newverts[j * 6 + 2]).normalized * radius;
-                    newverts[j * 6 + 5] = SupaMath.Average(newverts[j * 6 + 2], newverts[j * 6]).normalized * radius;
+                    Console.WriteLine("J = " + j);
+                    triangles[j * 3] = triangles[j * 3];
+                    vertices[triangles[j * 3]] = vertices[triangles[j * 3]];
+                    int v1index = IndexOfV(vertices[triangles[j * 3]]);
+                    if(v1index == -1)
+                    {
+                        v1index = vertIndex;
+                        newverts[vertIndex] = vertices[triangles[j * 3]];
+                    }
+                    int v2index = IndexOfV(vertices[triangles[j * 3]]);
+                    if (v2index == -1)
+                    {
+                        v2index = vertIndex;
+                        newverts[vertIndex++] = vertices[triangles[j * 3 + 1]];
+                    }
+                    int v3index = IndexOfV(vertices[triangles[j * 3]]);
+                    if (v3index == -1)
+                    {
+                        v3index = vertIndex;
+                        newverts[vertIndex++] = vertices[triangles[j * 3 + 2]];
+                    }
+                    Vector3 v4 = SupaMath.Average(newverts[v1index], newverts[v2index]).normalized * radius;
+                    int v4index = IndexOfV(v4);
+                    if(v4index == -1)
+                    {
+                        v4index = vertIndex;
+                        newverts[vertIndex++] = v4;
+                    }
+                    Vector3 v5 = SupaMath.Average(newverts[v2index], newverts[v3index]).normalized * radius;
+                    int v5index = IndexOfV(v5);
+                    if (v5index == -1)
+                    {
+                        v5index = vertIndex;
+                        newverts[vertIndex++] = v5;
+                    }
+                    Vector3 v6 = SupaMath.Average(newverts[v3index], newverts[v1index]).normalized * radius;
+                    int v6index = IndexOfV(v6);
+                    if (v6index == -1)
+                    {
+                        v6index = vertIndex;
+                        newverts[vertIndex++] = v6;
+                    }
 
 
                     // triangles between: 
@@ -63,29 +101,37 @@ namespace SupaStuff.Unity
                     // nv1,nv2,nv3
                     // Total: 12 points for triangles
 
-                    newTriangles[j * 12] = j * 6;
-                    newTriangles[j * 12 + 1] = j * 6 + 3;
-                    newTriangles[j * 12 + 2] = j * 6 + 5;
+                    newTriangles[j * 12] = v1index;
+                    newTriangles[j * 12 + 1] = v4index;
+                    newTriangles[j * 12 + 2] = v6index;
 
-                    newTriangles[j * 12 + 3] = j * 6 + 1;
-                    newTriangles[j * 12 + 4] = j * 6 + 4;
-                    newTriangles[j * 12 + 5] = j * 6 + 3;
+                    newTriangles[j * 12 + 3] = v2index;
+                    newTriangles[j * 12 + 4] = v5index;
+                    newTriangles[j * 12 + 5] = v4index;
 
-                    newTriangles[j * 12 + 6] = j * 6 + 2;
-                    newTriangles[j * 12 + 7] = j * 6 + 5;
-                    newTriangles[j * 12 + 8] = j * 6 + 4;
+                    newTriangles[j * 12 + 6] = v3index;
+                    newTriangles[j * 12 + 7] = v6index;
+                    newTriangles[j * 12 + 8] = v5index;
 
                     newTriangles[j * 12 + 9] = j * 6 + 3;
                     newTriangles[j * 12 + 10] = j * 6 + 4;
                     newTriangles[j * 12 + 11] = j * 6 + 5;
-                    triangles = newTriangles;
-                    vertices = newverts;
                 }
-                mesh.vertices = vertices;
-                mesh.triangles = triangles;
+                triangles = newTriangles;
+                vertices = newverts;
+                int IndexOfI(int val)
+                {
+                    return SupaMath.IndexOf(newTriangles, val);
+                }
+                int IndexOfV(Vector3 val)
+                {
+                    return SupaMath.IndexOf(newverts, val);
+                }
             }
+            mesh.vertices = vertices;
+            mesh.triangles = triangles;
         }
-
+        
 
 
         public IcosphereGenerator(int radius)
@@ -101,6 +147,11 @@ namespace SupaStuff.Unity
                         new Vector3(N,Z,X),new Vector3(N,Z,-X),new Vector3(N,-Z,X),new Vector3(N,-Z,-X),
                         new Vector3(Z,X,N),new Vector3(-Z,X,N),new Vector3(Z,-X,N),new Vector3(-Z,-X,N)
             };
+
+            for(int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] *= radius;
+            }
             triangles = new int[]
             {
                         0,4,1,  0,9,4,  9,5,4,  4,5,8,  4,8,1,

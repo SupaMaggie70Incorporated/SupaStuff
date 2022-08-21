@@ -18,6 +18,7 @@ namespace SupaStuff.Net.ServerSide
         private LocalClientConnection()
         {
             this.IsLocal = true;
+            address = new IPAddress(new byte[] {127,0,0,1});
             client = new ClientSide.Client(this);
             NetMain.ClientLogger.Log("Local client initialized");
         }
@@ -42,6 +43,16 @@ namespace SupaStuff.Net.ServerSide
         }
         public override void Kick(string message)
         {
+        }
+        public override void Dispose()
+        {
+            if (!IsActive) return;
+            IsActive = false;
+            try
+            {
+                Server.Instance.connections.Remove(this);
+            }
+            catch { }
         }
     }
 }

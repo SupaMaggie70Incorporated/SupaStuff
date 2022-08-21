@@ -49,6 +49,7 @@ namespace SupaStuff.Net.ServerSide
 
         public void Update()
         {
+            if (!IsActive) return;
             for (int i = 0; i < connections.Count; i++)
             {
                 ClientConnection connection = connections[i];
@@ -61,7 +62,6 @@ namespace SupaStuff.Net.ServerSide
                 {
                     NetMain.ServerLogger.Log("Kicking " + connection.address + " because they should've already been kicked");
                     connections[i].Dispose();
-                    connections.RemoveAt(i);
                     i--;
                     continue;
                 }
@@ -108,10 +108,11 @@ namespace SupaStuff.Net.ServerSide
             IsActive = false;
             //List<ClientConnection> connections = this.connections;
             //this.connections = null;
-            foreach (var connection in connections)
+            while (connections.Count > 0)
             {
                 try
                 {
+                    ClientConnection connection = connections[0];
                     NetMain.ServerLogger.Log("Closing connection to " + connection.address + " because we are shutting down the server");
                     connection.Dispose();
                 }

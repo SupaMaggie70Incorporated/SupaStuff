@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using SupaStuff.Unity;
+using SupaStuff.Net.Example;
 
 namespace SupaStuff_Tester;
 public class Program
 {
     public static void Main()
     {
-        Console.WriteLine("Hello world!");
+        IcosphereGenerator gen = new IcosphereGenerator(10);
+        gen.Subdivide(1);
     }
 }

@@ -30,5 +30,22 @@ namespace SupaStuff.Math
         {
             return (vec1 + vec2) / 2;
         }
+        public static int IndexOf<T>(T[] arr,T value)
+        {
+            for(int i = 0;i < arr.Length;i++)
+            {
+                if(arr[i] == null)
+                {
+                    if (value == null) return i;
+                    else continue;
+                }
+                else
+                {
+                    if (value == null) continue;
+                    else if(value.Equals(arr[i])) return i;
+                }
+            }
+            return -1;
+        }
     }
 }
