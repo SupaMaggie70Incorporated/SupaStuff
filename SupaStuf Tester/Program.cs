@@ -7,11 +7,13 @@ using SupaStuff.Unity;
 using SupaStuff.Net.Example;
 
 
-namespace SupaStuff_Tester;
-public class Program
+namespace SupaStuff_Tester
 {
-    public static void Main()
+    public class Program
     {
-        Console.WriteLine("Hello world!");
+        public static void Main()
+        {
+            Console.WriteLine("Hello world!");
+        }
     }
 }
