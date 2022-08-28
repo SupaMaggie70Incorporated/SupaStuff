@@ -12,7 +12,6 @@ using System.Net.Sockets;
 using SupaStuff.Net.Packets;
 using SupaStuff.Net.Packets.BuiltIn;
 
-using SupaStuff.Net.Packets.Util;
 using SupaStuff.Util;
 using SupaStuff.Math;
 
