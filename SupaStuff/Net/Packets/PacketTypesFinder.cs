@@ -5,7 +5,7 @@ using System.Reflection;
 using SupaStuff.Util;
 
 
-namespace SupaStuff.Net.Packets.Util
+namespace SupaStuff.Net.Packets
 {
     internal static class PacketTypesFinder
     {

@@ -32,7 +32,7 @@ namespace SupaStuff.Net
             NetLogger = Logger.GetLogger("Net/Main");
             ServerLogger = Logger.GetLogger("Net/Server");
             ClientLogger = Logger.GetLogger("Net/Client");
-            Packets.Util.PacketTypesFinder.GetTypes();
+            Packets.PacketTypesFinder.GetTypes();
             GetHost();
         }
         public static void Update()

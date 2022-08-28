@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SupaStuff.Net.Packets.Util;
 using System.Reflection;
 using SupaStuff.Net.ClientSide;
 using SupaStuff.Net.ServerSide;

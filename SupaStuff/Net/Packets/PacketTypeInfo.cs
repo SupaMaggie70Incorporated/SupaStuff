@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SupaStuff.Net.Packets.Util
+namespace SupaStuff.Net.Packets
 {
     internal struct PacketTypeInfo
     {
