@@ -28,7 +28,6 @@ namespace SupaStuff.Util
                 else if (type.IsInterface && !(type.Name[0] == 'I' && char.IsUpper(type.Name[0])))
                 {
                     AddProblem($"[INTERFACE NAME INVALID] Invalid interface name: {type.FullName} should start with \"I[lower case letter]\"");
-
                 }
                 CheckMethods(type);
                 CheckFields(type);
