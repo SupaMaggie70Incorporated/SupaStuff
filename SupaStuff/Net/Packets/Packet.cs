@@ -9,7 +9,7 @@ using SupaStuff.Net.ClientSide;
 using SupaStuff.Net.ServerSide;
 namespace SupaStuff.Net.Packets
 {
-    public abstract class Packet : /*IBytifiable,*/ IDisposable
+    public abstract class Packet : IDisposable
     {
         internal byte[] data;
         public static bool IsAllowedSize(int size)
