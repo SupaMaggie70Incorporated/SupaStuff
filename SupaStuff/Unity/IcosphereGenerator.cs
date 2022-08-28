@@ -17,16 +17,21 @@ namespace SupaStuff.Unity
         {
             get
             {
+                // Values for ease of copying & pasting
                 const float X = .525731112119133606f;
                 const float Z = .850650808352039932f;
                 const float N = 0f;
                 Mesh mesh = new Mesh();
+
+                // These are the starting triangles, which later get subdivided
+
                 mesh.vertices = new Vector3[]
                 {
                         new Vector3(-X,N,Z),new Vector3(X,N,Z),new Vector3(-X,N,-Z),new Vector3(X,N,-Z),
                         new Vector3(N,Z,X),new Vector3(N,Z,-X),new Vector3(N,-Z,X),new Vector3(N,-Z,-X),
                         new Vector3(Z,X,N),new Vector3(-Z,X,N),new Vector3(Z,-X,N),new Vector3(-Z,-X,N)
                 };
+
                 mesh.triangles = new int[]
                 {
                         0,4,1,  0,9,4,  9,5,4,  4,5,8,  4,8,1,
@@ -43,16 +48,26 @@ namespace SupaStuff.Unity
         {
             for (int i = 0; i < times; i++)
             {
+                // IDEK what this function does tbh
+
+                // There will never be more than twice the number of vertices(this function works with not only icospheres but also lone triangles etc)
                 Vector3[] newverts = new Vector3[vertices.Length * 2];
                 int vertIndex = 0;
                 int[] newTriangles = new int[triangles.Length * 4];
+                // Reps is how many triangles there are
                 int reps = triangles.Length / 3;
-                Console.WriteLine($"{vertices.Length} : {newverts.Length} : {triangles.Length} : {newTriangles.Length}");
+                // Console.WriteLine($"{vertices.Length} : {newverts.Length} : {triangles.Length} : {newTriangles.Length}");
+
+                // Loop through each triangle
                 for (int j = 0; j < reps; j++)
                 {
+                    // The following few lines were for debugging where it was going wrong
                     Console.WriteLine("J = " + j);
                     triangles[j * 3] = triangles[j * 3];
                     vertices[triangles[j * 3]] = vertices[triangles[j * 3]];
+                    
+                    // Get the indexes of important vertices(needs work)
+
                     int v1index = IndexOfV(vertices[triangles[j * 3]]);
                     if(v1index == -1)
                     {
@@ -71,6 +86,9 @@ namespace SupaStuff.Unity
                         v3index = vertIndex;
                         newverts[vertIndex++] = vertices[triangles[j * 3 + 2]];
                     }
+
+                    // These are the vertices between other vertices
+
                     Vector3 v4 = SupaMath.Average(newverts[v1index], newverts[v2index]).normalized * radius;
                     int v4index = IndexOfV(v4);
                     if(v4index == -1)
@@ -100,6 +118,9 @@ namespace SupaStuff.Unity
                     // v3,nv3,nv2
                     // nv1,nv2,nv3
                     // Total: 12 points for triangles
+                    
+
+                    // Add 4 new triangles from 1 triangle(cus subdividing yeah)
 
                     newTriangles[j * 12] = v1index;
                     newTriangles[j * 12 + 1] = v4index;
@@ -117,10 +138,13 @@ namespace SupaStuff.Unity
                     newTriangles[j * 12 + 10] = j * 6 + 4;
                     newTriangles[j * 12 + 11] = j * 6 + 5;
                 }
+                // Update the triangles list for the next repetition
                 triangles = newTriangles;
                 vertices = newverts;
+                // Local functions
                 int IndexOfI(int val)
                 {
+                    // IndexOf function of array
                     return SupaMath.IndexOf(newTriangles, val);
                 }
                 int IndexOfV(Vector3 val)
@@ -128,6 +152,7 @@ namespace SupaStuff.Unity
                     return SupaMath.IndexOf(newverts, val);
                 }
             }
+            // Update the mesh
             mesh.vertices = vertices;
             mesh.triangles = triangles;
         }
