@@ -16,6 +16,8 @@ namespace SupaStuff.Net.ServerSide
     {
         internal Server<T> server;
 
+        public T Data = default(T);
+
         protected TcpClient tcpClient;
         protected NetworkStream stream;
         protected List<Packet> packetsToWrite = new List<Packet>();
@@ -36,6 +38,7 @@ namespace SupaStuff.Net.ServerSide
 
         public ClientConnection(TcpClient tcpClient)
         {
+            
             isActive = true;
             this.tcpClient = tcpClient;
             tcpClient.NoDelay = false;
