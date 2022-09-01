@@ -68,7 +68,7 @@ namespace SupaStuff.Net.Packets
             return arr;
         }
         protected abstract byte[] Bytify();
-        public abstract void Execute(ClientConnection sender);
+        public abstract void Execute(IClientConnection sender);
         public int GetID()
         {
             return GetType().GetCustomAttribute<APacket>().PacketID;

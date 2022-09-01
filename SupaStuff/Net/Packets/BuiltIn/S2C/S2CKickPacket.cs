@@ -15,10 +15,10 @@ namespace SupaStuff.Net.Packets.BuiltIn
         {
             return Encoding.ASCII.GetBytes(message);
         }
-        public override void Execute(ClientConnection sender)
+        public override void Execute(IClientConnection sender)
         {
             NetMain.ClientLogger.Log("You have been kicked from the server for:\n    " + message);
-            ClientSide.Client.Instance?.Dispose();
+            NetMain.ClientInstance?.Dispose();
         }
         public S2CKickPacket(byte[] bytes)
         {

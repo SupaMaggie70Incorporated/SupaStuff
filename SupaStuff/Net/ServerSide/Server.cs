@@ -11,30 +11,33 @@ using SupaStuff.Net.Packets;
 
 namespace SupaStuff.Net.ServerSide
 {
-    public class Server : IDisposable
+    public class Server<T> : IServer
     {
-        public static Server Instance { get; private set; }
         public TcpListener listener { get; private set; }
         public int port = 12345;
-        public bool IsActive { get; private set; }
+        public bool isActive { get; private set; }
         public LocalClientConnection localConnection { get; private set; }
-        public List<ClientConnection> connections { get; private set; }
+        public List<IClientConnection> connections { get; private set; }
         public readonly int maxConnections;
         public readonly byte[] Password;
+        public byte[] GetPassword() => Password;
+        public bool IsActive() => isActive;
+        public LocalClientConnection GetLocalConnection() => localConnection;
+        public List<IClientConnection> GetConnections() => connections;
         public Server(int maxConnections, int port, byte[] password)
         {
             this.Password = password;
             this.port = port;
-            IsActive = true;
-            Instance = this;
+            isActive = true;
+            NetMain.ServerInstance = this;
             this.maxConnections = maxConnections;
-            connections = new List<ClientConnection>(maxConnections);
+            connections = new List<IClientConnection>(maxConnections);
             listener = new TcpListener(NetMain.host, port);
             StartListening();
             NetMain.ServerLogger.Log("Server started");
             listener.BeginAcceptTcpClient(new System.AsyncCallback(ClientConnected), null);
             NetMain.ServerLogger.Log("Accepting tcp client");
-            localConnection = ClientConnection.LocalClient();
+            localConnection = LocalClientConnection.LocalClient(this);
             connections.Add(localConnection);
             NetMain.NetLogger.Log("Server started!");
         }
@@ -49,18 +52,18 @@ namespace SupaStuff.Net.ServerSide
 
         public void Update()
         {
-            if (!IsActive) return;
+            if (!isActive) return;
             for (int i = 0; i < connections.Count; i++)
             {
-                ClientConnection connection = connections[i];
+                IClientConnection connection = connections[i];
                 if (connection == null)
                 {
                     connections.RemoveAt(i);
                     i--;
                 }
-                else if (!IsActive)
+                else if (!isActive)
                 {
-                    NetMain.ServerLogger.Log("Kicking " + connection.address + " because they should've already been kicked");
+                    NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " because they should've already been kicked");
                     connections[i].Dispose();
                     i--;
                     continue;
@@ -76,11 +79,11 @@ namespace SupaStuff.Net.ServerSide
                 }
             }
         }
-        private void ClientConnected(System.IAsyncResult ar)
+        internal virtual void ClientConnected(IAsyncResult ar)
         {
             try
             {
-                ClientConnection connection = new ClientConnection(listener.EndAcceptTcpClient(ar));
+                ClientConnection<T> connection = new ClientConnection<T>(listener.EndAcceptTcpClient(ar));
                 NetMain.ServerLogger.Log("Attempted connection from " + connection.address + "!");
                 if (connections.Count + 1 < maxConnections)
                 {
@@ -104,17 +107,17 @@ namespace SupaStuff.Net.ServerSide
         }
         public void Dispose()
         {
-            if (!IsActive) return;
-            IsActive = false;
+            if (!isActive) return;
+            isActive = false;
             //List<ClientConnection> connections = this.connections;
             //this.connections = null;
             while (connections.Count > 0)
             {
                 try
                 {
-                    ClientConnection connection = connections[0];
-                    NetMain.ServerLogger.Log("Closing connection to " + connection.address + " because we are shutting down the server");
-                    connection.Dispose();
+                    IClientConnection connection = connections[0];
+                    NetMain.ServerLogger.Log("Closing connection to " + connection.GetAddress() + " because we are shutting down the server");
+                    Kick(connection, "Server is shutting down.");
                 }
                 catch
                 {
@@ -122,19 +125,18 @@ namespace SupaStuff.Net.ServerSide
                 }
             }
             listener.Stop();
-            Instance = null;
             connections.Clear();
             NetMain.NetLogger.Log("Closing server");
         }
-        public event Action<ClientConnection> OnClientConnected;
-        private void ClientConnectedEvent(ClientConnection connection)
+        public event Action<IClientConnection> OnClientConnected;
+        private void ClientConnectedEvent(ClientConnection<T> connection)
         {
             if (OnClientConnected == null) return;
-            OnClientConnected.Invoke(connection);
+            OnClientConnected.Invoke(connection as IClientConnection);
         }
         public void SendToAll(Packet packet)
         {
-            foreach (ClientConnection connection in connections)
+            foreach (ClientConnection<T> connection in connections)
             {
                 connection.SendPacket(packet);
             }
@@ -144,19 +146,21 @@ namespace SupaStuff.Net.ServerSide
         /// </summary>
         /// <param name="connection"></param>
         /// <param name="message"></param>
-        public void Kick(ClientConnection connection, string message)
+        public void Kick(IClientConnection connection, string message)
         {
-            NetMain.NetLogger.Log("Kicking " + connection.address + " for reason: " + message);
+            NetMain.NetLogger.Log("Kicking " + connection.GetAddress() + " for reason: " + message);
             connection.Kick(message);
+            connections.Remove(connection);
         }
         /// <summary>
         /// Instantly kick someone
         /// </summary>
         /// <param name="connection"></param>
-        public void Kick(ClientConnection connection)
+        public void Kick(IClientConnection connection)
         {
-            NetMain.ServerLogger.Log("Kicking " + connection.address + " because we want to kick him idk");
+            NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " because we want to kick him idk");
             connection.Dispose();
+            connections.Remove(connection);
 
         }
         /// <summary>
@@ -166,7 +170,7 @@ namespace SupaStuff.Net.ServerSide
         public LocalClientConnection MakeLocalConnection()
         {
             if (connections.Count + 1 == maxConnections) return null;
-            LocalClientConnection connection = LocalClientConnection.LocalClient();
+            LocalClientConnection connection = LocalClientConnection.LocalClient(this);
             connections.Add(connection);
             return connection;
         }

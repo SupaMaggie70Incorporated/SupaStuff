@@ -17,12 +17,13 @@ namespace SupaStuff.Net.ClientSide
     {
         public TcpClient tcpClient { get; private set; }
         public NetworkStream stream { get; private set; }
-        public static Client Instance { get; private set; }
         public bool IsLocal { get; private set; }
         public bool IsActive { get; internal set; }
         public LocalClientConnection localConnection { get; private set; }
         public PacketStream packetStream { get; private set; }
         public readonly int port;
+
+        public byte[] Password;
         /// <summary>
         /// Create a client and attempt to connect to server
         /// </summary>
@@ -32,10 +33,11 @@ namespace SupaStuff.Net.ClientSide
             IsLocal = false;
             IsActive = true;
             //External client
-            Instance = this;
+            NetMain.ClientInstance = this;
             //New client to connect with
             tcpClient = new TcpClient();
             this.port = port;
+            Password = password;
             /*
             //How long to wait
             TimeSpan timeSpan = TimeSpan.FromSeconds(1);
@@ -66,7 +68,7 @@ namespace SupaStuff.Net.ClientSide
             //Local client
             this.IsLocal = true;
             IsActive = true;
-            Instance = this;
+            NetMain.ClientInstance = this;
             localConnection = localconnection;
 
         }
@@ -104,7 +106,7 @@ namespace SupaStuff.Net.ClientSide
             if (!IsActive) return;
             IsActive = false;
             NetMain.ClientLogger.Log("Client closed!");
-            Instance = null;
+            NetMain.ClientInstance = null;
             stream.Close();
             stream.Dispose();
             tcpClient.Close();

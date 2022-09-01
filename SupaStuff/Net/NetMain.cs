@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using SupaStuff.Util;
 using System.Net;
 using System.Net.Sockets;
+
+using SupaStuff.Net.ClientSide;
+using SupaStuff.Net.ServerSide;
 namespace SupaStuff.Net
 {
     public static class NetMain
@@ -23,6 +26,8 @@ namespace SupaStuff.Net
             }
         }
         public static IPAddress host { get; private set; }
+        public static Client ClientInstance { get; internal set; }
+        public static IServer ServerInstance { get;internal set; }
 
         public static Logger NetLogger { get; private set; }
         public static Logger ServerLogger { get; private set; }
@@ -37,13 +42,13 @@ namespace SupaStuff.Net
         }
         public static void Update()
         {
-            if (ServerSide.Server.Instance != null)
+            if (NetMain.ServerInstance != null)
             {
-                ServerSide.Server.Instance.Update();
+                NetMain.ServerInstance.Update();
             }
-            if (ClientSide.Client.Instance != null)
+            if (NetMain.ClientInstance != null)
             {
-                ClientSide.Client.Instance.Update();
+                NetMain.ClientInstance.Update();
             }
         }
     }

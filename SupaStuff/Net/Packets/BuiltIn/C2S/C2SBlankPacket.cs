@@ -12,7 +12,7 @@ namespace SupaStuff.Net.Packets.BuiltIn
         {
             return new byte[0];
         }
-        public override void Execute(ClientConnection sender)
+        public override void Execute(IClientConnection sender)
         {
         }
         public C2SBlankPacket()

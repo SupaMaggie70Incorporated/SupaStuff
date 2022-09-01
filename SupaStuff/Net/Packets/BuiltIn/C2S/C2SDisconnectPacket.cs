@@ -15,9 +15,9 @@ namespace SupaStuff.Net.Packets.BuiltIn
         {
             return Encoding.ASCII.GetBytes(message);
         }
-        public override void Execute(ClientConnection sender)
+        public override void Execute(IClientConnection sender)
         {
-            NetMain.ServerLogger.Log("Client " + sender.address.ToString() + " disconnected from server for:\n    " + message);
+            NetMain.ServerLogger.Log("Client " + sender.GetAddress().ToString() + " disconnected from server for:\n    " + message);
             sender.Dispose();
         }
         public C2SDisconnectPacket(byte[] bytes)

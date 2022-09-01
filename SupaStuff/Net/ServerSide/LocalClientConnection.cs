@@ -12,45 +12,57 @@ using SupaStuff.Net.Packets;
 
 namespace SupaStuff.Net.ServerSide
 {
-    public class LocalClientConnection : ClientConnection
+    public class LocalClientConnection : IClientConnection
     {
         public ClientSide.Client client { get; internal set; }
-        private LocalClientConnection()
+        public IPAddress GetAddress() => new IPAddress(new byte[] { 127, 0, 0, 1 });
+        public bool IsLocal() => true;
+        public bool IsActive() => server.IsActive();
+        public IServer server;
+        public IServer GetServer() => server;
+        public bool AuthFinished() => true;
+        public void FinishAuth()
         {
-            this.IsLocal = true;
-            address = new IPAddress(new byte[] {127,0,0,1});
+
+        }
+        protected LocalClientConnection(IServer server)
+        {
             client = new ClientSide.Client(this);
             NetMain.ClientLogger.Log("Local client initialized");
+            this.server = server;
         }
-        internal static LocalClientConnection LocalClient()
+        
+        internal static LocalClientConnection LocalClient(IServer server)
         {
-            return new LocalClientConnection();
+            return new LocalClientConnection(server);
         }
-        public override void SendPacket(Packet packet)
+        public void SendPacket(Packet packet)
         {
             client.RecievePacket(packet);
         }
+        public event Action<Packet> OnMessage;
         public void RecievePacket(Packet packet)
         {
+            if(OnMessage != null) OnMessage(packet);
             packet.Execute(this);
         }
-        public override void Update()
+        public void Update()
         {
             return;
         }
-        public override void Kick()
+        public void Kick()
         {
         }
-        public override void Kick(string message)
+        public void Kick(string message)
         {
         }
-        public override void Dispose()
+        public event Action OnDispose;
+        public void Dispose()
         {
-            if (!IsActive) return;
-            IsActive = false;
+            if(OnDispose != null) OnDispose();
             try
             {
-                Server.Instance.connections.Remove(this);
+                //server.Kick(this,"Kicked for local client terminated");
             }
             catch { }
         }

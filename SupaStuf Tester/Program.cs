@@ -13,7 +13,7 @@ namespace SupaStuff_Tester
     {
         public static void Main()
         {
-            Console.WriteLine("Hello world!");
+            new ExampleDemo();
         }
     }
 }

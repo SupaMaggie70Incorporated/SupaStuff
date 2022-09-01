@@ -14,7 +14,7 @@ namespace SupaStuff.Net.Example
     public class ExamplePacket : Packet
     {
         public short num;
-        public override void Execute(ClientConnection sender)
+        public override void Execute(IClientConnection sender)
         {
             NetMain.NetLogger.Log("Number: " + num.ToString());
             return;

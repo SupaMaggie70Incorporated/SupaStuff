@@ -12,27 +12,31 @@ using SupaStuff.Math;
 
 namespace SupaStuff.Net.ServerSide
 {
-    public class ClientConnection : IDisposable
+    public class ClientConnection<T> : IClientConnection
     {
+        internal Server<T> server;
+
         protected TcpClient tcpClient;
         protected NetworkStream stream;
-        public bool IsLocal { get; protected set; }
         protected List<Packet> packetsToWrite = new List<Packet>();
-        public bool IsActive { get; protected set; }
+        public bool isActive { get; protected set; }
         protected HandshakeStage handshakeStage = HandshakeStage.unstarted;
         public PacketStream packetStream { get; protected set; }
         public IPAddress address { get; protected set; }
 
+        public IPAddress GetAddress() => address;
+        public bool IsLocal() => false;
+        public bool IsActive() => isActive;
+        public void FinishAuth() => finishAuth = true;
+        public bool AuthFinished() => finishAuth;
+        public IServer GetServer() => server;
+
         internal DateTime connectionStarted;
         internal bool finishAuth = false;
-        public ClientConnection(IAsyncResult ar)
-        {
-            tcpClient = Server.Instance.listener.EndAcceptTcpClient(ar);
-        }
+
         public ClientConnection(TcpClient tcpClient)
         {
-            IsActive = true;
-            IsLocal = false;
+            isActive = true;
             this.tcpClient = tcpClient;
             tcpClient.NoDelay = false;
             stream = tcpClient.GetStream();
@@ -49,14 +53,9 @@ namespace SupaStuff.Net.ServerSide
         }
         protected ClientConnection()
         {
-            IsActive = true;
+            isActive = true;
         }
-        internal static LocalClientConnection LocalClient()
-        {
-            return LocalClientConnection.LocalClient();
-        }
-        public delegate void OnMessage(Packet packet);
-        public event OnMessage onMessage;
+        public event Action<Packet> OnMessage;
         /// <summary>
         /// Send a packet only if it's remote 
         /// 
@@ -68,7 +67,7 @@ namespace SupaStuff.Net.ServerSide
         }
         public virtual void Update()
         {
-            if (!IsActive) Console.WriteLine("Wait, why am I still being updated?");
+            if (!isActive) Console.WriteLine("Wait, why am I still being updated?");
             packetStream.Update();
             if (!finishAuth)
             {
@@ -87,25 +86,15 @@ namespace SupaStuff.Net.ServerSide
         /// </param>
         public virtual void Dispose()
         {
-            if (!IsActive) return;
-            IsActive = false;
+            if (!isActive) return;
+            isActive = false;
             NetMain.ServerLogger.Log("Connection to client " + address + " terminated");
-            try
-            {
-                Server.Instance.connections.Remove(this);
-            }
-            catch { }
-            if (IsLocal)
-            {
-            }
-            else
-            {
-                tcpClient.Dispose();
-                stream.Close();
-                stream.Dispose();
-                packetStream.Dispose();
-            }
-            IsActive = false;
+            server.Kick(this);
+            tcpClient.Dispose();
+            stream.Close();
+            stream.Dispose();
+            packetStream.Dispose();
+            isActive = false;
             DisposeEvent();
         }
         public event Action OnDispose;

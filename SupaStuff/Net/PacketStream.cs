@@ -23,7 +23,7 @@ namespace SupaStuff.Net
     {
         internal bool isServer;
         internal bool isRunning = true;
-        internal ServerSide.ClientConnection clientConnection = null;
+        internal ServerSide.IClientConnection clientConnection = null;
         private NetworkStream stream;
         private Func<bool> customOnError;
         public Logger logger = NetMain.NetLogger;
@@ -158,7 +158,7 @@ namespace SupaStuff.Net
             try
             {
                 Type type = packet.GetType();
-                if (isServer && !clientConnection.finishAuth && type != typeof(C2SWelcomePacket))
+                if (isServer && !clientConnection.AuthFinished() && type != typeof(C2SWelcomePacket))
                 {
                     logger.Log("We recieved a packet other than the C2SWelcomePacket as our first packet, so fuck off hacker");
                     onError();

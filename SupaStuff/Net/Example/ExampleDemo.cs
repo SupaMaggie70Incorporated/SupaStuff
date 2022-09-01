@@ -11,10 +11,14 @@ using Main = SupaStuff.Net.NetMain;
 
 namespace SupaStuff.Net.Example
 {
+    public struct EmptyStruct
+    {
+
+    }
     public class ExampleDemo
     {
         public bool isRunning = true;
-        public Server testServer;
+        public Server<EmptyStruct> testServer;
         public ClientSide.Client client;
         /// <summary>
         /// Example of how to use SupaStuff.Net
@@ -36,7 +40,7 @@ namespace SupaStuff.Net.Example
             Main.Init();
             Main.NetLogger.Log("Initiating Scarry Black Window...");
 
-            testServer = new Server(4, port, password);
+            testServer = new Server<EmptyStruct>(4, port, password);
             /*
             testServer.OnClientConnected += (ClientConnection conn) => {
                 conn.SendPacket(new ExamplePacket2());

@@ -17,7 +17,7 @@ namespace SupaStuff.Net.Example
         {
             return new byte[0];
         }
-        public override void Execute(ClientConnection sender)
+        public override void Execute(IClientConnection sender)
         {
             Main.ServerLogger.Log("S2C packet recieved!");
         }
