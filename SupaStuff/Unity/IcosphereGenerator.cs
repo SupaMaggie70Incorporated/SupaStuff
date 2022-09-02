@@ -1,16 +1,21 @@
-﻿using System;
+﻿#define UseMesh
+//#undef UseMesh
+using System;
 using System.Collections.Generic;
 using System.Text;
 using SupaStuff.Math;
 using UnityEngine;
 //https://schneide.blog/2016/07/15/generating-an-icosphere-in-c/
+
 namespace SupaStuff.Unity
 {
     public class IcosphereGenerator
     {
+#if UseMesh
         public Mesh mesh;
-        private Vector3[] vertices;
-        private int[] triangles;
+#endif
+        public Vector3[] vertices { get;private set; }
+        public int[] triangles { get; private set; }
         public readonly int radius;
 
         public static Mesh StarterSphere
@@ -48,113 +53,101 @@ namespace SupaStuff.Unity
         {
             for (int i = 0; i < times; i++)
             {
-                // IDEK what this function does tbh
+                List<Vector3> newvertices = new List<Vector3>();
+                List<int> newtriangles = new List<int>();
 
-                // There will never be more than twice the number of vertices(this function works with not only icospheres but also lone triangles etc)
-                Vector3[] newverts = new Vector3[vertices.Length * 2];
-                int vertIndex = 0;
-                int[] newTriangles = new int[triangles.Length * 4];
-                // Reps is how many triangles there are
-                int reps = triangles.Length / 3;
-                // Console.WriteLine($"{vertices.Length} : {newverts.Length} : {triangles.Length} : {newTriangles.Length}");
+                int numtriangles = triangles.Length / 3;
 
-                // Loop through each triangle
-                for (int j = 0; j < reps; j++)
+                for(int tri = 0; tri < numtriangles; tri++)
                 {
-                    // The following few lines were for debugging where it was going wrong
-                    Console.WriteLine("J = " + j);
-                    triangles[j * 3] = triangles[j * 3];
-                    vertices[triangles[j * 3]] = vertices[triangles[j * 3]];
-                    
-                    // Get the indexes of important vertices(needs work)
+                    #region vertices
+                    Vector3 v1 = vertices[triangles[tri * 3]];
+                    Vector3 v2 = vertices[triangles[(tri * 3)+1]];
+                    Vector3 v3 = vertices[triangles[(tri * 3) + 2]];
 
-                    int v1index = IndexOfV(vertices[triangles[j * 3]]);
-                    if(v1index == -1)
-                    {
-                        v1index = vertIndex;
-                        newverts[vertIndex] = vertices[triangles[j * 3]];
-                    }
-                    int v2index = IndexOfV(vertices[triangles[j * 3]]);
-                    if (v2index == -1)
-                    {
-                        v2index = vertIndex;
-                        newverts[vertIndex++] = vertices[triangles[j * 3 + 1]];
-                    }
-                    int v3index = IndexOfV(vertices[triangles[j * 3]]);
-                    if (v3index == -1)
-                    {
-                        v3index = vertIndex;
-                        newverts[vertIndex++] = vertices[triangles[j * 3 + 2]];
-                    }
+                    Vector3 v4 = SupaMath.Average(v1, v2);
+                    Vector3 v5 = SupaMath.Average(v2, v3);
+                    Vector3 v6 = SupaMath.Average(v3, v1);
+                    #endregion
 
-                    // These are the vertices between other vertices
+                    int i1 = newvertices.IndexOf(v1);
+                    if(i1 == -1)
+                    {
+                        i1 = newvertices.Count;
+                        newvertices.Add(v1);
+                    }
+                    #region repeat
 
-                    Vector3 v4 = SupaMath.Average(newverts[v1index], newverts[v2index]).normalized * radius;
-                    int v4index = IndexOfV(v4);
-                    if(v4index == -1)
+                    int i2 = newvertices.IndexOf(v2);
+                    if (i1 == -1)
                     {
-                        v4index = vertIndex;
-                        newverts[vertIndex++] = v4;
-                    }
-                    Vector3 v5 = SupaMath.Average(newverts[v2index], newverts[v3index]).normalized * radius;
-                    int v5index = IndexOfV(v5);
-                    if (v5index == -1)
-                    {
-                        v5index = vertIndex;
-                        newverts[vertIndex++] = v5;
-                    }
-                    Vector3 v6 = SupaMath.Average(newverts[v3index], newverts[v1index]).normalized * radius;
-                    int v6index = IndexOfV(v6);
-                    if (v6index == -1)
-                    {
-                        v6index = vertIndex;
-                        newverts[vertIndex++] = v6;
+                        i2 = newvertices.Count;
+                        newvertices.Add(v2);
                     }
 
+                    int i3 = newvertices.IndexOf(v3);
+                    if (i3 == -1)
+                    {
+                        i3 = newvertices.Count;
+                        newvertices.Add(v3);
+                    }
 
-                    // triangles between: 
-                    // v1,nv1,nv3
-                    // v2,nv2,nv1
-                    // v3,nv3,nv2
-                    // nv1,nv2,nv3
-                    // Total: 12 points for triangles
-                    
+                    int i4 = newvertices.IndexOf(v4);
+                    if (i4 == -1)
+                    {
+                        i4 = newvertices.Count;
+                        newvertices.Add(v4);
+                    }
 
-                    // Add 4 new triangles from 1 triangle(cus subdividing yeah)
+                    int i5 = newvertices.IndexOf(v5);
+                    if (i5 == -1)
+                    {
+                        i5 = newvertices.Count;
+                        newvertices.Add(v5);
+                    }
 
-                    newTriangles[j * 12] = v1index;
-                    newTriangles[j * 12 + 1] = v4index;
-                    newTriangles[j * 12 + 2] = v6index;
+                    int i6 = newvertices.IndexOf(v6);
+                    if (i6 == -1)
+                    {
+                        i6 = newvertices.Count;
+                        newvertices.Add(v6);
+                    }
+                    #endregion
 
-                    newTriangles[j * 12 + 3] = v2index;
-                    newTriangles[j * 12 + 4] = v5index;
-                    newTriangles[j * 12 + 5] = v4index;
+                    #region triangles
 
-                    newTriangles[j * 12 + 6] = v3index;
-                    newTriangles[j * 12 + 7] = v6index;
-                    newTriangles[j * 12 + 8] = v5index;
+                    newtriangles.Add(i1);
+                    newtriangles.Add(i6);
+                    newtriangles.Add(i4);
 
-                    newTriangles[j * 12 + 9] = j * 6 + 3;
-                    newTriangles[j * 12 + 10] = j * 6 + 4;
-                    newTriangles[j * 12 + 11] = j * 6 + 5;
+                    newtriangles.Add(i4);
+                    newtriangles.Add(i5);
+                    newtriangles.Add(i2);
+
+                    newtriangles.Add(i6);
+                    newtriangles.Add(i3);
+                    newtriangles.Add(i5);
+
+                    newtriangles.Add(i6);
+                    newtriangles.Add(i5);
+                    newtriangles.Add(i4);
+
+                    #endregion
                 }
-                // Update the triangles list for the next repetition
-                triangles = newTriangles;
-                vertices = newverts;
-                // Local functions
-                int IndexOfI(int val)
-                {
-                    // IndexOf function of array
-                    return SupaMath.IndexOf(newTriangles, val);
-                }
-                int IndexOfV(Vector3 val)
-                {
-                    return SupaMath.IndexOf(newverts, val);
-                }
+                vertices = newvertices.ToArray();
+                triangles = newtriangles.ToArray();
+#if UseMesh
+                Debug.Log($"Triangles: {triangles.Length}, vertices: {vertices.Length}");
+#endif
             }
             // Update the mesh
+#if UseMesh
+            mesh.Clear();
             mesh.vertices = vertices;
             mesh.triangles = triangles;
+            Debug.Log($"Final: Triangles: {mesh.triangles.Length}, Vertices: {mesh.vertices.Length}");
+#endif
+
         }
         
 
@@ -165,7 +158,6 @@ namespace SupaStuff.Unity
             const float X = .525731112119133606f;
             const float Z = .850650808352039932f;
             const float N = 0f;
-            mesh = new Mesh();
             vertices = new Vector3[]
             {
                         new Vector3(-X,N,Z),new Vector3(X,N,Z),new Vector3(-X,N,-Z),new Vector3(X,N,-Z),
@@ -184,8 +176,13 @@ namespace SupaStuff.Unity
                         7,10,3,  7,6,10,  7,11,6,  11,0,6,  0,1,6,
                         6,1,10,  9,0,11,  9,11,2,  9,2,5,  7,2,11
             };
+
+#if UseMesh
+            mesh = new Mesh();
+            mesh.Clear();
             mesh.vertices = vertices;
             mesh.triangles = triangles;
+#endif
 
         }
     }

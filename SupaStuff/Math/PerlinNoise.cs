@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+//https://github.com/daniilsjb/perlin-noise/blob/master/db_perlin.hpp
+
 namespace SupaStuff.Math
 {
     public class PerlinNoise
@@ -11,7 +13,7 @@ namespace SupaStuff.Math
         public readonly float Frequency;
         public readonly int Depth;
         // Original permutation
-        protected static int[] hash = new int[]
+        protected static int[] p = new int[]
         {
             151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36,
             103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120, 234, 75, 0,
@@ -40,6 +42,91 @@ namespace SupaStuff.Math
             Seed = seed;
             Frequency = frequency;
             Depth = depth;
+        }
+        static float lerp(float a, float b, float t)
+        {
+            return a + t * (b - a);
+        }
+        static int floor(float x)
+        {
+            return (int)System.Math.Floor(x);
+        }
+        static float fade(float t)
+        {
+            return (float)(t * t * t * (t * (t * (6.0) - (15.0)) + (10.0)));
+        }
+        static float dot_grad(int hash,float xf)
+        {
+            // In 1D case, the gradient may be either 1 or -1
+            // The distance vector is the input offset (relative to the smallest bound)
+            return ((hash & 0x1) != 0) ? xf : -xf;
+        }
+        static float dot_grad(int hash, float xf, float yf)
+        {
+            // In 2D case, the gradient may be any of 8 direction vectors pointing to the
+            // edges of a unit-square. The distance vector is the input offset (relative to
+            // the smallest bound)
+            switch (hash & 0x7)
+            {
+                case 0x0: return xf + yf;
+                case 0x1: return xf;
+                case 0x2: return xf - yf;
+                case 0x3: return -yf;
+                case 0x4: return -xf - yf;
+                case 0x5: return -xf;
+                case 0x6: return -xf + yf;
+                case 0x7: return yf;
+                default: return 0.0f;
+            }
+        }
+        static float dot_grad(int hash,float xf,float yf,float zf)
+        {
+            // In 3D case, the gradient may be any of 12 direction vectors pointing to the edges
+            // of a unit-cube (rounded to 16 with duplications). The distance vector is the input
+            // offset (relative to the smallest bound)
+            switch (hash & 0xF)
+            {
+                case 0x0: return xf + yf;
+                case 0x1: return -xf + yf;
+                case 0x2: return xf - yf;
+                case 0x3: return -xf - yf;
+                case 0x4: return xf + zf;
+                case 0x5: return -xf + zf;
+                case 0x6: return xf - zf;
+                case 0x7: return -xf - zf;
+                case 0x8: return yf + zf;
+                case 0x9: return -yf + zf;
+                case 0xA: return yf - zf;
+                case 0xB: return -yf - zf;
+                case 0xC: return yf + xf;
+                case 0xD: return -yf + zf;
+                case 0xE: return yf - xf;
+                case 0xF: return -yf - zf;
+                default: return 0.0f;
+            }
+        }
+        float perlin(float x)
+        {
+            // Left coordinate of the unit-line that contains the input
+            int xi0 = floor(x);
+
+            // Input location in the unit-line
+            float xf0 = x - xi0;
+            float xf1 = xf0 - 1.0f;
+
+            // Wrap to range 0-255
+            int xi = xi0 & 0xFF;
+
+            // Apply the fade function to the location
+            float u = fade(xf0);
+
+            // Generate hash values for each point of the unit-line
+            int h0 = p[xi + 0];
+            int h1 = p[xi + 1];
+
+            // Linearly interpolate between dot products of each gradient with its distance to the input location
+
+            return lerp(dot_grad(h0, xf0), dot_grad(h1, xf1), u);
         }
     }
 }
