@@ -128,11 +128,11 @@ namespace SupaStuff.Net.ServerSide
             connections.Clear();
             NetMain.NetLogger.Log("Closing server");
         }
-        public event Action<IClientConnection> OnClientConnected;
+        public event Action<ClientConnection<T>> OnClientConnected;
         private void ClientConnectedEvent(ClientConnection<T> connection)
         {
             if (OnClientConnected == null) return;
-            OnClientConnected.Invoke(connection as IClientConnection);
+            OnClientConnected.Invoke(connection);
         }
         public void SendToAll(Packet packet)
         {
