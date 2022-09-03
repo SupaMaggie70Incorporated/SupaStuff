@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace SupaStuff.Unity
 {
+    [UnitySpecific]
     public class IcosphereGenerator
     {
 #if UseMesh

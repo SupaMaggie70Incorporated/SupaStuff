@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SupaStuff.Unity;
 using SupaStuff.Net.Example;
+using SupaStuff.Math;
 
 
 namespace SupaStuff_Tester
@@ -13,7 +14,8 @@ namespace SupaStuff_Tester
     {
         public static void Main()
         {
-            TestSphere();
+            //TestSphere();
+            TestPerlin();
         }
         public static void TestSphere()
         {
@@ -38,6 +40,12 @@ namespace SupaStuff_Tester
         {
             new ExampleDemo();
 
+        }
+        public static void TestPerlin()
+        {
+            PerlinNoise.perlin(255);
+            PerlinNoise.perlin(255, 255);
+            PerlinNoise.perlin(255, 255, 255);
         }
     }
 }
