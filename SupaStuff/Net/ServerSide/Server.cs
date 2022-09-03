@@ -128,7 +128,7 @@ namespace SupaStuff.Net.ServerSide
             connections.Clear();
             NetMain.NetLogger.Log("Closing server");
         }
-        public event Action<ClientConnection<T>> OnClientConnected;
+        public event Action<IClientConnection> OnClientConnected;
         private void ClientConnectedEvent(ClientConnection<T> connection)
         {
             if (OnClientConnected == null) return;
