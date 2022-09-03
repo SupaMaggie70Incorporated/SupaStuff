@@ -10,10 +10,9 @@ namespace SupaStuff.Util
     /// <summary>
     /// Logger class. Create a new one with GetLogger(string name). To use with unity, use SupaStuff.Unity.dll and run SupaStuff.Unity.Main.Init
     /// </summary>
-    public class Logger
+    public struct Logger
     {
         public readonly string Name;
-        private static Dictionary<string, Logger> s_loggers = new Dictionary<string, Logger>();
         /// <summary>
         /// Contains the methods for logging in unity
         /// </summary>
@@ -45,15 +44,7 @@ namespace SupaStuff.Util
         /// <returns></returns>
         public static Logger GetLogger(string name)
         {
-            Logger logger;
-            if (LoggerExists(name, out logger))
-            {
-                return logger;
-            }
-            else
-            {
-                return new Logger(name);
-            }
+            return new Logger(name);
         }
         /// <summary>
         /// For use in unity projects. Use SupaStuff.Unity.Main.Init instead of doing this yourself.
@@ -72,18 +63,7 @@ namespace SupaStuff.Util
         /// <param name="name"></param>
         private Logger(string name)
         {
-            this.Name = name;
-            s_loggers.Add(name, this);
-        }
-        /// <summary>
-        /// Checks if the logger exists, and returns it if so
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="_logger"></param>
-        /// <returns></returns>
-        private static bool LoggerExists(string name, out Logger _logger)
-        {
-            return s_loggers.TryGetValue(name, out _logger);
+            Name = name;
         }
         /// <summary>
         /// Logs the message
