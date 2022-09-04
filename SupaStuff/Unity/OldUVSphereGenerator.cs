@@ -19,7 +19,7 @@ namespace SupaStuff.Unity
         public int trianglesIndex;
         public Vector2[] uvs;
         public int uvindex;
-        public UVSphereGenerator(float[][] grid, Vector3 center)
+        public OldUVSphereGenerator(float[][] grid, Vector3 center)
         {
             mesh = new Mesh();
             rings = grid.Length;

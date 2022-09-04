@@ -14,7 +14,6 @@ namespace SupaStuff_Tester
     {
         public static void Main()
         {
-            //TestSphere();
             TestPerlin();
         }
         public static void TestSphere()
@@ -43,9 +42,7 @@ namespace SupaStuff_Tester
         }
         public static void TestPerlin()
         {
-            PerlinNoise.perlin(255);
-            PerlinNoise.perlin(255, 255);
-            PerlinNoise.perlin(255, 255, 255);
+            Console.WriteLine(PerlinNoise.perlin(0.1f,0,0));
         }
     }
 }
