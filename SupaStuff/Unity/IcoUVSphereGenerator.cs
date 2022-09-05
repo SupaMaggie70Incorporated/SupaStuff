@@ -10,8 +10,7 @@ namespace SupaStuff.Unity
     {
         public static Mesh MakeMesh()
         {
-            Mesh mesh = new Mesh();
-            return mesh;
+            return null;
         }
     }
 }

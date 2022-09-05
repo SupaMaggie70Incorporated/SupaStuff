@@ -132,7 +132,7 @@ namespace SupaStuff.Net.ServerSide
         private void ClientConnectedEvent(ClientConnection<T> connection)
         {
             if (OnClientConnected == null) return;
-            OnClientConnected.Invoke(connection as IClientConnection);
+            OnClientConnected.Invoke(connection);
         }
         public void SendToAll(Packet packet)
         {
