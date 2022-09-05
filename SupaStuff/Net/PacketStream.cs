@@ -176,6 +176,10 @@ namespace SupaStuff.Net
                 }
                 catch(Exception e)
                 {
+                    logger.Log("We had issues handling a packet, so we're gonna commit die");
+                    onError();
+                    Dispose();
+
                     logger.Log("Packet of type " + type.FullName + " could not be recieved:\n" + e.ToString());
                 }
             }
