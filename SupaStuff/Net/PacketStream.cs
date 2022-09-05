@@ -281,8 +281,16 @@ namespace SupaStuff.Net
         public void SendPacket(Packet packet)
         {
             if (!isRunning) return;
-            stream.Write(packet.GenerateHeader(), 0, 8);
-            stream.Write(packet.data, 0, packet.data.Length);
+            try
+            {
+                stream.Write(packet.GenerateHeader(), 0, 8);
+                stream.Write(packet.data, 0, packet.data.Length);
+            }catch
+            {
+                logger.Log("Failed to send a packet, probably because they closed their side");
+                onError();
+                Dispose();
+            }
 
         }
         /// <summary>

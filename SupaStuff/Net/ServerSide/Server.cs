@@ -130,9 +130,17 @@ namespace SupaStuff.Net.ServerSide
         }
         public void SendToAll(Packet packet)
         {
+            if (!IsActive()) return;
             foreach (IClientConnection connection in connections)
             {
-                connection.SendPacket(packet);
+                try
+                {
+                    connection.SendPacket(packet);
+                }catch
+                {
+                    NetMain.ServerLogger.Log($"We couldnt send a packet to {connection.GetAddress()} because the connection was closed");
+                    Dispose();
+                }
             }
         }
         /// <summary>
