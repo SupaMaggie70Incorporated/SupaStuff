@@ -38,7 +38,7 @@ namespace SupaStuff.Net.ServerSide
 
         public ClientConnection(TcpClient tcpClient)
         {
-            
+            server = NetMain.ServerInstance as Server<T>;
             isActive = true;
             this.tcpClient = tcpClient;
             tcpClient.NoDelay = false;

@@ -268,6 +268,7 @@ namespace SupaStuff.Net
         /// <param name="packet"></param>
         public void SendPacket(Packet packet)
         {
+            if (!isRunning) return;
             stream.Write(packet.GenerateHeader(), 0, 8);
             stream.Write(packet.data, 0, packet.data.Length);
 
