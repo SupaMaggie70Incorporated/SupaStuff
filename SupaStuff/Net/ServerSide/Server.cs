@@ -130,7 +130,7 @@ namespace SupaStuff.Net.ServerSide
         }
         public void SendToAll(Packet packet)
         {
-            foreach (ClientConnection<T> connection in connections)
+            foreach (IClientConnection connection in connections)
             {
                 connection.SendPacket(packet);
             }
