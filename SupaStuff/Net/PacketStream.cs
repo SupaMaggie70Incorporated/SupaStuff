@@ -125,6 +125,7 @@ namespace SupaStuff.Net
             catch
             {
                 logger.Log("Error recieving packet, disconnecting");
+                
                 onError();
                 Dispose();
                 return false;
@@ -169,7 +170,14 @@ namespace SupaStuff.Net
                 {
                     RecievePacketEvent(packet);
                 }
-                packet.Execute(clientConnection);
+                try
+                {
+                    packet.Execute(clientConnection);
+                }
+                catch(Exception e)
+                {
+                    logger.Log("Packet of type " + type.FullName + " could not be recieved:\n" + e.ToString());
+                }
             }
             catch
             {

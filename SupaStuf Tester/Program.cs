@@ -14,7 +14,8 @@ namespace SupaStuff_Tester
     {
         public static void Main()
         {
-            TestPerlin();
+            //TestPerlin();
+            TestNet();
         }
         public static void TestSphere()
         {
