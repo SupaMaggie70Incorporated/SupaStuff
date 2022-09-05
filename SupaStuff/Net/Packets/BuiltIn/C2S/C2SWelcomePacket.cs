@@ -7,7 +7,7 @@ using SupaStuff.Math;
 
 namespace SupaStuff.Net.Packets.BuiltIn
 {
-    [APacket(-538927, false, false)]
+    [APacket(-538927, false)]
     internal class C2SWelcomePacket : Packet
     {
         public readonly byte[] bytes;

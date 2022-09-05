@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SupaStuff.Net.Packets.BuiltIn
 {
-    [APacket(-521341, true, false)]
+    [APacket(-521341, true)]
     internal sealed class S2CKickPacket : Packet
     {
         public string message;

@@ -44,7 +44,7 @@ namespace SupaStuff.Net.ServerSide
         public void RecievePacket(Packet packet)
         {
             if(OnMessage != null) OnMessage(packet);
-            packet.Execute(this);
+            packet.Execute(this); 
         }
         public void Update()
         {
