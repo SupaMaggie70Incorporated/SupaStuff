@@ -68,7 +68,7 @@ namespace SupaStuff.Net.ServerSide
         {
             packetStream.SendPacket(packet);
         }
-        public void RecievePacket(Packet packet)
+        public virtual void RecievePacket(Packet packet)
         {
             packetStream.HandleIncomingPacket(packet);
         }

@@ -16,11 +16,10 @@ namespace SupaStuff.Net.ServerSide
     {
         public ClientSide.Client client { get; internal set; }
         public override IPAddress GetAddress() => new IPAddress(new byte[] { 127, 0, 0, 1 });
-        public bool IsLocal() => true;
-        public bool IsActive() => server.IsActive();
-        public IServer GetServer() => server;
-        public bool AuthFinished() => true;
-        public void FinishAuth()
+        public override bool IsLocal() => true;
+        public override bool IsActive() => server.IsActive();
+        public override bool AuthFinished() => true;
+        public override void FinishAuth()
         {
 
         }
@@ -39,7 +38,7 @@ namespace SupaStuff.Net.ServerSide
         {
             client.RecievePacket(packet);
         }
-        public void RecievePacket(Packet packet)
+        public override void RecievePacket(Packet packet)
         {
             packet.Execute(this); 
         }
