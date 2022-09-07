@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SupaStuff.Net.Packets.BuiltIn
 {
-    [APacket(-194752, false, false)]
+    [APacket(-194752, false)]
     internal class C2SBlankPacket : Packet
     {
         protected override byte[] Bytify()

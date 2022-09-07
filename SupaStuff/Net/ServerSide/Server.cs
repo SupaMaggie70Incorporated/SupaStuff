@@ -111,18 +111,12 @@ namespace SupaStuff.Net.ServerSide
             isActive = false;
             //List<ClientConnection> connections = this.connections;
             //this.connections = null;
-            while (connections.Count > 0)
+            foreach (IClientConnection connection in connections)
             {
-                try
-                {
-                    IClientConnection connection = connections[0];
-                    NetMain.ServerLogger.Log("Closing connection to " + connection.GetAddress() + " because we are shutting down the server");
-                    Kick(connection, "Server is shutting down.");
-                }
-                catch
-                {
+                if (connection == null || !connection.IsActive()) return;
+                NetMain.ServerLogger.Log("Closing connection to " + connection.GetAddress() + " because we are shutting down the server");
+                Kick(connection, "Server is shutting down.");
 
-                }
             }
             listener.Stop();
             connections.Clear();
@@ -136,9 +130,17 @@ namespace SupaStuff.Net.ServerSide
         }
         public void SendToAll(Packet packet)
         {
-            foreach (ClientConnection<T> connection in connections)
+            if (!IsActive()) return;
+            foreach (IClientConnection connection in connections)
             {
-                connection.SendPacket(packet);
+                try
+                {
+                    connection.SendPacket(packet);
+                }catch
+                {
+                    NetMain.ServerLogger.Log($"We couldnt send a packet to {connection.GetAddress()} because the connection was closed");
+                    Dispose();
+                }
             }
         }
         /// <summary>

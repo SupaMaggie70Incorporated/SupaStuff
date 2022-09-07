@@ -125,6 +125,7 @@ namespace SupaStuff.Net
             catch
             {
                 logger.Log("Error recieving packet, disconnecting");
+                
                 onError();
                 Dispose();
                 return false;
@@ -169,7 +170,18 @@ namespace SupaStuff.Net
                 {
                     RecievePacketEvent(packet);
                 }
-                packet.Execute(clientConnection);
+                try
+                {
+                    packet.Execute(clientConnection);
+                }
+                catch(Exception e)
+                {
+                    logger.Log("We had issues handling a packet, so we're gonna commit die");
+                    onError();
+                    Dispose();
+
+                    logger.Log("Packet of type " + type.FullName + " could not be recieved:\n" + e.ToString());
+                }
             }
             catch
             {
@@ -268,8 +280,17 @@ namespace SupaStuff.Net
         /// <param name="packet"></param>
         public void SendPacket(Packet packet)
         {
-            stream.Write(packet.GenerateHeader(), 0, 8);
-            stream.Write(packet.data, 0, packet.data.Length);
+            if (!isRunning) return;
+            try
+            {
+                stream.Write(packet.GenerateHeader(), 0, 8);
+                stream.Write(packet.data, 0, packet.data.Length);
+            }catch
+            {
+                logger.Log("Failed to send a packet, probably because they closed their side");
+                onError();
+                Dispose();
+            }
 
         }
         /// <summary>

@@ -78,8 +78,16 @@ namespace SupaStuff.Net.ClientSide
         /// <param name="packet"></param>
         public void SendPacket(Packet packet)
         {
-            if (IsLocal) localConnection.RecievePacket(packet);
-            else packetStream.SendPacket(packet);
+            try
+            {
+                if (IsLocal) localConnection.RecievePacket(packet);
+                else packetStream.SendPacket(packet);
+            }
+            catch
+            {
+                Dispose();
+                NetMain.ClientLogger.Log("Failed sending a packet because the connection is closed");
+            }
         }
         public void RecievePacket(Packet packet)
         {
@@ -92,8 +100,16 @@ namespace SupaStuff.Net.ClientSide
         {
             if (!IsLocal)
             {
-                packetStream.Update();
-                if (!tcpClient.Connected) Dispose();
+                try
+                {
+                    packetStream.Update();
+                    if (!tcpClient.Connected) Dispose();
+                }
+                catch
+                {
+                    NetMain.ClientLogger.Log("Failed updating for unknown reason, closing");
+                    Dispose();
+                }
             }
         }
         public delegate void OnMessage(Packet packet);
