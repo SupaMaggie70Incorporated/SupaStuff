@@ -7,16 +7,13 @@ namespace SupaStuff.Unity
     [UnitySpecific]
     public abstract class SmoothMovingEntity : MonoBehaviour
     {
-        Vector3 currentPos;
         public Vector3 NextPosition;
         public Vector3 CurrentPosition;
         public Vector3 PreviousPosition;
-        Vector3 currentRot;
 
         public Vector3 NextRotation;
         public Vector3 CurrentRotation;
         public Vector3 PreviousRotation;
-        public Texture2D Icon;
         public float lastFixedUpdateTime = 0;
         public Vector3 RenderPosition
         {
@@ -56,7 +53,7 @@ namespace SupaStuff.Unity
         }
         public virtual void OnEnable()
         {
-
+            
         }
         public virtual void OnDisable()
         {
