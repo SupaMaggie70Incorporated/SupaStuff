@@ -30,7 +30,7 @@ namespace SupaStuff.Unity
             {
                 float amount = (Time.time - lastFixedUpdateTime) / Time.fixedDeltaTime;
                 if (amount > 1) amount = 1;
-                return Quaternion.Euler(Vector3.Lerp(PreviousPosition, CurrentPosition, amount));
+                return Quaternion.Euler(Vector3.Lerp(PreviousRotation, CurrentRotation, amount));
             }
         }
 
@@ -70,11 +70,6 @@ namespace SupaStuff.Unity
             CurrentPosition = NextPosition;
             PreviousRotation = CurrentRotation;
             CurrentRotation = NextRotation;
-            TickMovement();
-        }
-        public virtual void TickMovement()
-        {
-
         }
     }
 }
