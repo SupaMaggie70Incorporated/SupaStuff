@@ -12,13 +12,12 @@ using SupaStuff.Net.Packets;
 
 namespace SupaStuff.Net.ServerSide
 {
-    public class LocalClientConnection : IClientConnection
+    public class LocalClientConnection<T> : ClientConnection<T>
     {
         public ClientSide.Client client { get; internal set; }
-        public IPAddress GetAddress() => new IPAddress(new byte[] { 127, 0, 0, 1 });
+        public override IPAddress GetAddress() => new IPAddress(new byte[] { 127, 0, 0, 1 });
         public bool IsLocal() => true;
         public bool IsActive() => server.IsActive();
-        public IServer server;
         public IServer GetServer() => server;
         public bool AuthFinished() => true;
         public void FinishAuth()
@@ -29,42 +28,34 @@ namespace SupaStuff.Net.ServerSide
         {
             client = new ClientSide.Client(this);
             NetMain.ClientLogger.Log("Local client initialized");
-            this.server = server;
+            this.server = server as Server<T>;
         }
         
-        internal static LocalClientConnection LocalClient(IServer server)
+        internal static LocalClientConnection<T> LocalClient(IServer server)
         {
-            return new LocalClientConnection(server);
+            return new LocalClientConnection<T>(server);
         }
-        public void SendPacket(Packet packet)
+        public override void SendPacket(Packet packet)
         {
             client.RecievePacket(packet);
         }
-        public event Action<Packet> OnMessage;
         public void RecievePacket(Packet packet)
         {
-            if(OnMessage != null) OnMessage(packet);
             packet.Execute(this); 
         }
-        public void Update()
+        public override void Update()
         {
             return;
         }
-        public void Kick()
+        public override void Kick()
         {
         }
-        public void Kick(string message)
+        public override void Kick(string message)
         {
         }
-        public event Action OnDispose;
-        public void Dispose()
-        {
-            if(OnDispose != null) OnDispose();
-            try
-            {
-                //server.Kick(this,"Kicked for local client terminated");
-            }
-            catch { }
+        public override void Dispose()
+        { 
+
         }
     }
 }

@@ -10,9 +10,7 @@ namespace SupaStuff.Net.ServerSide
         IPAddress GetAddress();
         bool IsLocal();
         bool IsActive();
-
-
-        event Action<Packets.Packet> OnMessage;
+        
         void SendPacket(Packets.Packet packet);
 
         void Update();
@@ -22,6 +20,7 @@ namespace SupaStuff.Net.ServerSide
         void Kick(string message);
 
         void Kick();
+        void RecievePacket(Packets.Packet packet);
         void FinishAuth();
         bool AuthFinished();
         IServer GetServer();

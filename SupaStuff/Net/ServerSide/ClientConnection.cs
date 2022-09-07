@@ -26,11 +26,11 @@ namespace SupaStuff.Net.ServerSide
         public PacketStream packetStream { get; protected set; }
         public IPAddress address { get; protected set; }
 
-        public IPAddress GetAddress() => address;
-        public bool IsLocal() => false;
-        public bool IsActive() => isActive;
-        public void FinishAuth() => finishAuth = true;
-        public bool AuthFinished() => finishAuth;
+        public virtual IPAddress GetAddress() => address;
+        public virtual bool IsLocal() => false;
+        public virtual bool IsActive() => isActive;
+        public virtual void FinishAuth() => finishAuth = true;
+        public virtual bool AuthFinished() => finishAuth;
         public IServer GetServer() => server;
 
         internal DateTime connectionStarted;
@@ -58,7 +58,7 @@ namespace SupaStuff.Net.ServerSide
         {
             isActive = true;
         }
-        public event Action<Packet> OnMessage;
+
         /// <summary>
         /// Send a packet only if it's remote 
         /// 
@@ -67,6 +67,10 @@ namespace SupaStuff.Net.ServerSide
         public virtual void SendPacket(Packet packet)
         {
             packetStream.SendPacket(packet);
+        }
+        public void RecievePacket(Packet packet)
+        {
+            packetStream.HandleIncomingPacket(packet);
         }
         public virtual void Update()
         {

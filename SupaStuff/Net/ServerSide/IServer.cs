@@ -12,10 +12,10 @@ namespace SupaStuff.Net.ServerSide
         event Action<IClientConnection> OnClientConnected;
         void SendToAll(Packets.Packet packet);
         void Kick(IClientConnection connection,string message);
-        LocalClientConnection MakeLocalConnection();
+        IClientConnection MakeLocalConnection();
         bool IsActive();
         byte[] GetPassword();
-        LocalClientConnection GetLocalConnection();
+        IClientConnection GetLocalConnection();
         List<IClientConnection> GetConnections();
     }
 }

@@ -16,13 +16,13 @@ namespace SupaStuff.Net.ServerSide
         public TcpListener listener { get; private set; }
         public int port = 12345;
         public bool isActive { get; private set; }
-        public LocalClientConnection localConnection { get; private set; }
+        public IClientConnection localConnection { get; private set; }
         public List<IClientConnection> connections { get; private set; }
         public readonly int maxConnections;
         public readonly byte[] Password;
         public byte[] GetPassword() => Password;
         public bool IsActive() => isActive;
-        public LocalClientConnection GetLocalConnection() => localConnection;
+        public IClientConnection GetLocalConnection() => localConnection;
         public List<IClientConnection> GetConnections() => connections;
         public Server(int maxConnections, int port, byte[] password)
         {
@@ -37,7 +37,7 @@ namespace SupaStuff.Net.ServerSide
             NetMain.ServerLogger.Log("Server started");
             listener.BeginAcceptTcpClient(new System.AsyncCallback(ClientConnected), null);
             NetMain.ServerLogger.Log("Accepting tcp client");
-            localConnection = LocalClientConnection.LocalClient(this);
+            localConnection = LocalClientConnection<T>.LocalClient(this);
             connections.Add(localConnection);
             NetMain.NetLogger.Log("Server started!");
         }
@@ -169,10 +169,10 @@ namespace SupaStuff.Net.ServerSide
         /// Create a new local connection to the server
         /// </summary>
         /// <returns></returns>
-        public LocalClientConnection MakeLocalConnection()
+        public IClientConnection MakeLocalConnection()
         {
             if (connections.Count + 1 == maxConnections) return null;
-            LocalClientConnection connection = LocalClientConnection.LocalClient(this);
+            IClientConnection connection = LocalClientConnection<T>.LocalClient(this);
             connections.Add(connection);
             return connection;
         }

@@ -19,7 +19,7 @@ namespace SupaStuff.Net.ClientSide
         public NetworkStream stream { get; private set; }
         public bool IsLocal { get; private set; }
         public bool IsActive { get; internal set; }
-        public LocalClientConnection localConnection { get; private set; }
+        public IClientConnection localConnection { get; private set; }
         public PacketStream packetStream { get; private set; }
         public readonly int port;
 
@@ -63,10 +63,10 @@ namespace SupaStuff.Net.ClientSide
         /// Create a local client connection
         /// </summary>
         /// <param name="localconnection"></param>
-        public Client(LocalClientConnection localconnection)
+        public Client(IClientConnection localconnection)
         {
             //Local client
-            this.IsLocal = true;
+            IsLocal = true;
             IsActive = true;
             NetMain.ClientInstance = this;
             localConnection = localconnection;
