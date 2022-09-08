@@ -30,8 +30,16 @@ namespace SupaStuff.Unity
             {
                 float amount = (Time.time - lastFixedUpdateTime) / Time.fixedDeltaTime;
                 if (amount > 1) amount = 1;
-                return Quaternion.Euler(Vector3.Lerp(PreviousRotation, CurrentRotation, amount));
+                return Quaternion.Euler(LerpAngle(PreviousRotation, CurrentRotation, amount));
             }
+        }
+        Vector3 LerpAngle(Vector3 angle1,Vector3 angle2,float amount)
+        {
+            return new Vector3(
+                Mathf.LerpAngle(angle1.x, angle2.x, amount),
+                Mathf.LerpAngle(angle1.y, angle2.y, amount),
+                Mathf.LerpAngle(angle1.z, angle2.z,amount)
+                );
         }
 
         public void Delete()
