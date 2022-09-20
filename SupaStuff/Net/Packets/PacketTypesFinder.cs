@@ -59,7 +59,7 @@ namespace SupaStuff.Net.Packets
             }
         }
         private static readonly Type[] argTypes = new Type[] { typeof(byte) };
-        private static readonly BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+        private const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
         public static Func<int,bool> GetLengthFunc(Type type)
         {
             MethodInfo method = type.GetMethod("IsAllowedSize",flags,null,argTypes,null);
