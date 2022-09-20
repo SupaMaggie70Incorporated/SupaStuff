@@ -56,8 +56,8 @@ namespace SupaStuff.Unity
         }
         public virtual void Update()
         {
-            transform.position = RenderPosition;
-            transform.rotation = RenderRotation;
+            transform.localPosition = RenderPosition;
+            transform.localRotation = RenderRotation;
         }
         public virtual void OnEnable()
         {
