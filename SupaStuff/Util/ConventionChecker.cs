@@ -10,13 +10,13 @@ namespace SupaStuff.Util
 {
     public class ConventionChecker
     {
-        List<string> _problems;
+        public List<string> _problems;
         private int _problemCount = 0;
         public static Logger Logger = Logger.GetLogger("Convention Checker");
         const BindingFlags s_allFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-        public void Check(Assembly assembly)
+        public void Check(Assembly assembly,int count = 1024)
         {
-            _problems = new List<string>(1024);
+            _problems = new List<string>(count);
             Type[] types = assembly.GetTypes();
             foreach (Type type in types)
             {
@@ -53,7 +53,7 @@ namespace SupaStuff.Util
             }
             Logger.Log($"Logged {_problems.Count} out of the {_problemCount} problems.");
         }
-        internal void WriteErrors()
+        public void WriteErrors()
         {
             if (_problems.Count == 0) return;
             File.WriteAllLines("problems.txt", _problems);

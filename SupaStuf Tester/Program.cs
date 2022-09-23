@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 using SupaStuff.Unity;
 using SupaStuff.Net.Example;
 using SupaStuff.Math;
+using SupaStuff.Util;
+
+using System.Reflection;
 
 
-namespace SupaStuff_Tester
+namespace SupaStuff.Tester
 {
     public class Program
     {
@@ -44,6 +47,13 @@ namespace SupaStuff_Tester
         public static void TestPerlin()
         {
             Console.WriteLine(PerlinNoise.perlin(0.1f,0,0));
+        }
+        public static void TestConventions()
+        {
+            ConventionChecker checker = new ConventionChecker();
+            checker.Check(Assembly.GetExecutingAssembly(),1024);
+            checker.LogErrors();
+            checker.WriteErrors();
         }
     }
 }
