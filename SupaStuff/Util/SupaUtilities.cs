@@ -27,5 +27,29 @@ namespace SupaStuff.Util
             }
             return result;
         }
+        /// <summary>
+        /// Untested
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr1"></param>
+        /// <param name="arr2"></param>
+        /// <returns></returns>
+        public static bool Contains<T>(T[] arr1, T[] arr2)
+        {
+            int index = 0;
+            for (int i = 0; i < arr1.Length; i++)
+            {
+                if (Equals(arr1[i], arr2[index]))
+                {
+                    index++;
+                    if (index == arr2.Length) return true;
+                }
+                else
+                {
+                    index = 0;
+                }
+            }
+            return false;
+        }
     }
 }
