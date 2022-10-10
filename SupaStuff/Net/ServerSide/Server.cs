@@ -16,7 +16,7 @@ namespace SupaStuff.Net.ServerSide
         public TcpListener listener { get; private set; }
         public int port = 12345;
         public bool isActive { get; private set; }
-        public IClientConnection localConnection { get; private set; }
+        public LocalClientConnection<T> localConnection { get; private set; }
         public List<IClientConnection> connections { get; private set; }
         public readonly int maxConnections;
         public readonly byte[] Password;

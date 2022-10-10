@@ -38,20 +38,8 @@ namespace SupaStuff.Net.ClientSide
             tcpClient = new TcpClient();
             this.port = port;
             Password = password;
-            /*
-            //How long to wait
-            TimeSpan timeSpan = TimeSpan.FromSeconds(1);
-            //Try to connect to server
-            var result = tcpClient.BeginConnect(ip, Server.port, null, null);
-            //Wait a second, if it hasnt worked it cant connect
-            var success = result.AsyncWaitHandle.WaitOne(timeSpan);
-            if (!success)
-            {
-                return;
-            }
-            */
+
             tcpClient.Connect(new IPEndPoint(ip, port));
-            //Get the stream
             stream = tcpClient.GetStream();
             packetStream = new PacketStream(stream, false, () => { Dispose(); return false; });
             packetStream.OnDisconnected += Dispose;
@@ -63,7 +51,7 @@ namespace SupaStuff.Net.ClientSide
         /// Create a local client connection
         /// </summary>
         /// <param name="localconnection"></param>
-        public Client(IClientConnection localconnection)
+        internal Client(IClientConnection localconnection)
         {
             //Local client
             IsLocal = true;
