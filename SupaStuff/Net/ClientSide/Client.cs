@@ -38,14 +38,22 @@ namespace SupaStuff.Net.ClientSide
             tcpClient = new TcpClient();
             this.port = port;
             Password = password;
+            NetMain.ClientLogger.Log("Client started!");
+            Connect(ip, port);
 
-            tcpClient.Connect(new IPEndPoint(ip, port));
+        }
+        public async Task<bool> Connect(IPAddress ip, int port)
+        {
+            if(!tcpClient.ConnectAsync(ip, port).Wait(5000))
+            {
+                return false;
+            }
             stream = tcpClient.GetStream();
             packetStream = new PacketStream(stream, false, () => { Dispose(); return false; });
             packetStream.OnDisconnected += Dispose;
-            NetMain.ClientLogger.Log("Client started!");
+            NetMain.ClientLogger.Log("Client successfully connected!");
             SendPacket(new C2SWelcomePacket());
-
+            return true;
         }
         /// <summary>
         /// Create a local client connection
