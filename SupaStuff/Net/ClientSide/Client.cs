@@ -40,20 +40,22 @@ namespace SupaStuff.Net.ClientSide
             Password = password;
             NetMain.ClientLogger.Log("Client started!");
             Connect(ip, port);
-
         }
-        public async Task<bool> Connect(IPAddress ip, int port)
+        public event Action OnConnected;
+        public async Task Connect(IPAddress ip, int port)
         {
             if(!tcpClient.ConnectAsync(ip, port).Wait(5000))
             {
-                return false;
+                Dispose();
+                return;
             }
             stream = tcpClient.GetStream();
             packetStream = new PacketStream(stream, false, () => { Dispose(); return false; });
             packetStream.OnDisconnected += Dispose;
-            NetMain.ClientLogger.Log("Client successfully connected!");
             SendPacket(new C2SWelcomePacket());
-            return true;
+            NetMain.ClientLogger.Log("Client successfully connected!");
+            if (OnConnected != null) OnConnected.Invoke();
+            return;
         }
         /// <summary>
         /// Create a local client connection
