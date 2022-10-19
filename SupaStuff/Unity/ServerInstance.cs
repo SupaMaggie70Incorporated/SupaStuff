@@ -37,12 +37,10 @@ namespace SupaStuff.Unity
         {
             server = new Server<T>(maxConnections, port, password);
             server.localConnection.Dispose();
-            server.StartListening();
         }
         public void InitializeLocal(int maxConnections, int port, byte[] password)
         {
             server = new Server<T>(maxConnections, port, password);
-            server.StartListening();
             ClientInstance<T>.Instance.InitializeLocal(server.localConnection);
         }
     }

@@ -44,7 +44,7 @@ namespace SupaStuff.Unity
             client.packetStream.OnDisconnected += () => { Debug.Log("Disconnected"); };
             Debug.Log("Finished");
         }
-        public void InitializeLocal(LocalClientConnection<T> connection)
+        internal protected void InitializeLocal(LocalClientConnection<T> connection)
         {
             Debug.Log("Started local client");
             client = connection.client;
