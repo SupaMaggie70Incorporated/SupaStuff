@@ -246,6 +246,7 @@ namespace SupaStuff.Net
         /// </summary>
         public void Update()
         {
+            if (!isRunning) return;
             DateTime now = DateTime.UtcNow;
 
 

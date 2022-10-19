@@ -96,6 +96,7 @@ namespace SupaStuff.Net.ClientSide
         /// </summary>
         public void Update()
         {
+            if (!IsActive) return;
             if (!IsLocal)
             {
                 try
