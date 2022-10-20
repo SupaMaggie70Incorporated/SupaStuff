@@ -21,6 +21,8 @@ namespace SupaStuff.Net.ClientSide
         public bool IsActive { get; internal set; }
         public IClientConnection localConnection { get; private set; }
         public PacketStream packetStream { get; private set; }
+
+        public IPAddress address;
         public readonly int port;
 
         public byte[] Password;
@@ -31,24 +33,26 @@ namespace SupaStuff.Net.ClientSide
         public Client(IPAddress ip, int port, byte[] password)
         {
             IsLocal = false;
-            IsActive = true;
+            IsActive = false;
             //External client
             NetMain.ClientInstance = this;
             //New client to connect with
             tcpClient = new TcpClient();
+            this.address = ip;
             this.port = port;
             Password = password;
             NetMain.ClientLogger.Log("Client started!");
-            Connect(ip, port);
+            tcpClient.BeginConnect(ip, port, new AsyncCallback(OnFinishConnection), null);
         }
-        public event Action OnConnected;
-        public async Task Connect(IPAddress ip, int port)
+        public void OnFinishConnection(IAsyncResult ar)
         {
-            if(!tcpClient.ConnectAsync(ip, port).Wait(5000))
+            tcpClient.EndConnect(ar);
+            if (!tcpClient.Connected)
             {
                 Dispose();
                 return;
             }
+            IsActive = true;
             stream = tcpClient.GetStream();
             packetStream = new PacketStream(stream, false, () => { Dispose(); return false; });
             packetStream.OnDisconnected += Dispose;
@@ -57,6 +61,7 @@ namespace SupaStuff.Net.ClientSide
             if (OnConnected != null) OnConnected.Invoke();
             return;
         }
+        public event Action OnConnected;
         /// <summary>
         /// Create a local client connection
         /// </summary>

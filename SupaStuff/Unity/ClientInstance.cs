@@ -12,6 +12,7 @@ using UnityEngine;
 using SupaStuff.Net.ClientSide;
 using SupaStuff.Net.ServerSide;
 using SupaStuff.Net.Packets;
+using static System.Net.Mime.MediaTypeNames;
 
 
 namespace SupaStuff.Unity
@@ -39,16 +40,30 @@ namespace SupaStuff.Unity
         }
         public void Initialize(IPAddress address, int port, byte[] password)
         {
-            Debug.Log("Started");
             client = new Client(address, port, password);
-            client.packetStream.OnDisconnected += () => { Debug.Log("Disconnected"); };
-            Debug.Log("Finished");
+            client.OnConnected += () =>
+            {
+                client.packetStream.OnDisconnected += () => { Debug.Log("Disconnected"); };
+            };
         }
         internal protected void InitializeLocal(LocalClientConnection<T> connection)
         {
             Debug.Log("Started local client");
             client = connection.client;
             Debug.Log("Finished");
+        }
+        public void OnFailedConnection()
+        {
+            Debug.Log("Client Failed to Connect!");
+            client.OnConnected -= OnConnected;
+            client.OnDispose -= OnFailedConnection;
+            client = null;
+        }
+        public void OnConnected()
+        {
+            Debug.Log("Client Successfully Connected!");
+            Instance.client.OnConnected -= OnConnected;
+            Instance.client.OnDispose -= OnFailedConnection;
         }
     }
 }

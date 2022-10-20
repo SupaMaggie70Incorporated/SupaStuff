@@ -119,6 +119,7 @@ namespace SupaStuff.Net.ServerSide
 
             }
             listener.Stop();
+            
             connections.Clear();
             NetMain.NetLogger.Log("Closing server");
         }
