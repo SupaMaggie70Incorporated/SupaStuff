@@ -25,7 +25,7 @@ namespace ExamplePacket
         public ExamplePacket()
         {
         }
-        public bool IsAllowedSize(int size) {
+        public new bool IsAllowedSize(int size) {
             return true;
         }
     }
