@@ -21,15 +21,14 @@ namespace SupaStuff.Net
 {
     public class PacketStream : IDisposable
     {
-        internal bool isServer;
-        internal bool isRunning = true;
+        internal bool IsServer;
+        internal bool Running = true;
         internal ServerSide.IClientConnection clientConnection = null;
-        private NetworkStream stream;
-        private Func<bool> customOnError;
-        public Logger logger = NetMain.NetLogger;
+        NetworkStream stream;
+        Logger logger = NetMain.NetLogger;
         //Server only
         internal DateTime lastCheckedIn = DateTime.UtcNow;
-        public static readonly int MaxUncheckedTime = 10;
+        public const int MaxUncheckedTime = 10;
 
         #region Packet buffer
 
@@ -40,20 +39,6 @@ namespace SupaStuff.Net
         byte[] packetBody = null;
         int packetBodyIndex = 0;
         #endregion
-        /// <summary>
-        /// Called when an error occurs
-        /// </summary>
-        private void onError()
-        {
-            try
-            {
-                customOnError();
-            }
-            catch
-            {
-
-            }
-        }
         /// <summary>
         /// Tries to recieve a packet, if it can't recieve the whole thing saves what it did get to variables to be continued later
         /// </summary>
@@ -81,9 +66,9 @@ namespace SupaStuff.Net
                         packetBodyIndex = 0;
 
 
-                        if (isServer)
+                        if (IsServer)
                         {
-                            if (!PacketTypesFinder.c2sTypes[packetID].isRightLength(packetSize))
+                            if (!PacketTypesFinder.C2STypes[packetID].IsRightLength(packetSize))
                             {
                                 Dispose();
                                 return false;
@@ -91,7 +76,7 @@ namespace SupaStuff.Net
                         }
                         else
                         {
-                            if (!PacketTypesFinder.s2cTypes[packetID].isRightLength(packetSize))
+                            if (!PacketTypesFinder.S2CTypes[packetID].IsRightLength(packetSize))
                             {
                                 Dispose();
                                 return false;
@@ -126,7 +111,6 @@ namespace SupaStuff.Net
             {
                 logger.Log("Error recieving packet, disconnecting");
                 
-                onError();
                 Dispose();
                 return false;
             }
@@ -136,7 +120,7 @@ namespace SupaStuff.Net
         /// </summary>
         private void CheckForPackets()
         {
-            if (!isRunning) return;
+            if (!Running) return;
             Packet packet;
             while (TryGetPacket(out packet))
             {
@@ -159,10 +143,9 @@ namespace SupaStuff.Net
             try
             {
                 Type type = packet.GetType();
-                if (isServer && !clientConnection.AuthFinished() && type != typeof(C2SWelcomePacket))
+                if (IsServer && !clientConnection.AuthFinished() && type != typeof(C2SWelcomePacket))
                 {
                     logger.Log("We recieved a packet other than the C2SWelcomePacket as our first packet, so fuck off hacker");
-                    onError();
                     Dispose();
                     return;
                 }
@@ -177,7 +160,6 @@ namespace SupaStuff.Net
                 catch(Exception e)
                 {
                     logger.Log("We had issues handling a packet, so we're gonna commit die");
-                    onError();
                     Dispose();
 
                     logger.Log("Packet of type " + type.FullName + " could not be recieved:\n" + e.ToString());
@@ -188,7 +170,6 @@ namespace SupaStuff.Net
                 if (this != null)
                 {
                     logger.Log("We had issues handling a packet, so we're gonna commit die");
-                    onError();
                     Dispose();
                 }
             }
@@ -201,15 +182,14 @@ namespace SupaStuff.Net
         {
             try
             {
-                Packet packet = Packet.GetPacket(packetID, packetBody, !isServer);
+                Packet packet = Packet.GetPacket(packetID, packetBody, !IsServer);
                 PacketCleanup();
-                if (isServer) lastCheckedIn = DateTime.UtcNow;
+                if (IsServer) lastCheckedIn = DateTime.UtcNow;
                 return packet;
             }
-            catch
+            catch(Exception e)
             {
-                logger.Log("Failed to complete the packet");
-                onError();
+                logger.Error(e.Message);
                 Dispose();
                 return null;
             }
@@ -234,11 +214,11 @@ namespace SupaStuff.Net
         /// <param name="stream">The stream to send and recieve from</param>
         /// <param name="isServer">Whether or not it is a server, used for packet decoding</param>
         /// <param name="onError">The function to be called on errors</param>
-        public PacketStream(NetworkStream stream, bool isServer, Func<bool> onError)
+        public PacketStream(NetworkStream stream, bool isServer)
         {
             this.stream = stream;
-            this.isServer = isServer;
-            customOnError = onError;
+            this.IsServer = isServer;
+            this.logger = isServer ? NetMain.ServerLogger : NetMain.ClientLogger;
         }
 
         /// <summary>
@@ -246,22 +226,21 @@ namespace SupaStuff.Net
         /// </summary>
         public void Update()
         {
-            if (!isRunning) return;
+            if (!Running) return;
             DateTime now = DateTime.UtcNow;
 
 
 
 
 
-            if (!isServer && SupaMath.TimeBetween(lastCheckedIn, now) > 5)
+            if (!IsServer && SupaMath.TimeBetween(lastCheckedIn, now) > 5)
             {
                 SendPacket(new C2SBlankPacket());
                 lastCheckedIn = now;
             }
-            if (isServer && SupaMath.TimeBetween(lastCheckedIn, now) > MaxUncheckedTime)
+            if (IsServer && SupaMath.TimeBetween(lastCheckedIn, now) > MaxUncheckedTime)
             {
                 logger.Log("We kicked a client because they waited too long to check in");
-                onError();
                 Dispose();
             }
 
@@ -281,15 +260,14 @@ namespace SupaStuff.Net
         /// <param name="packet"></param>
         public void SendPacket(Packet packet)
         {
-            if (!isRunning) return;
+            if (!Running) return;
             try
             {
                 stream.Write(packet.GenerateHeader(), 0, 8);
-                stream.Write(packet.data, 0, packet.data.Length);
+                stream.Write(packet.Data, 0, packet.Data.Length);
             }catch
             {
                 logger.Log("Failed to send a packet, probably because they closed their side");
-                onError();
                 Dispose();
             }
 
@@ -312,10 +290,10 @@ namespace SupaStuff.Net
 
         private void DisconnectedEvent()
         {
-            if (!isRunning) return;
-            isRunning = false;
+            if (!Running) return;
+            Running = false;
             OnDisconnected?.Invoke();
-            if (isServer)
+            if (IsServer)
             {
                 NetMain.ServerLogger.Log("Client decided to disconnect!");
             }

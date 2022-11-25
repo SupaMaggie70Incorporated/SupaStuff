@@ -8,18 +8,15 @@ namespace SupaStuff.Net.Packets
 {
     public class PacketException : Exception
     {
-        public readonly string message;
-        public PacketException()
+        public PacketException() : base("Packet exception occured!")
         {
-            message = "Packet exception occured!";
         }
-        public PacketException(string message)
+        public PacketException(string message) : base(message)
         {
-            message = "Packet exception: " + message;
         }
         public override string ToString()
         {
-            return message;
+            return Message;
         }
     }
 }

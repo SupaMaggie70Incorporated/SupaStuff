@@ -4,7 +4,12 @@ using System.Collections.Generic;
 
 namespace SupaStuff.Util
 {
-    internal class SupaQueue<T> : IEnumerable<T>
+    /// <summary>
+    /// Warning: This is not tested thoroughly, don't use it
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    [Obsolete]
+    public class SupaQueue<T> : IEnumerable<T>
     {
 
         public int capacity

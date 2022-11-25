@@ -14,49 +14,46 @@ namespace SupaStuff.Net.ServerSide
 {
     public class ClientConnection<T> : IClientConnection
     {
-        internal Server<T> server;
+        public Server<T> ConnectedServer;
 
         public T Data = default(T);
 
-        protected TcpClient tcpClient;
-        protected NetworkStream stream;
-        protected List<Packet> packetsToWrite = new List<Packet>();
-        public bool isActive { get; protected set; }
-        protected HandshakeStage handshakeStage = HandshakeStage.unstarted;
-        public PacketStream packetStream { get; protected set; }
-        public IPAddress address { get; protected set; }
+        public TcpClient TcpClient;
+        protected NetworkStream Stream;
+        public bool Active { get; protected set; }
+        public PacketStream PacketStream { get; protected set; }
+        public IPAddress Address { get; protected set; }
 
-        public virtual IPAddress GetAddress() => address;
+        public virtual IPAddress GetAddress() => Address;
         public virtual bool IsLocal() => false;
-        public virtual bool IsActive() => isActive;
-        public virtual void FinishAuth() => finishAuth = true;
-        public virtual bool AuthFinished() => finishAuth;
-        public IServer GetServer() => server;
+        public virtual bool IsActive() => Active;
+        public virtual void FinishAuth() => FinishedAuth = true;
+        public virtual bool AuthFinished() => FinishedAuth;
+        public IServer GetServer() => ConnectedServer;
 
-        internal DateTime connectionStarted;
-        internal bool finishAuth = false;
+        internal DateTime ConnectionStartTime;
+        internal bool FinishedAuth = false;
 
         public ClientConnection(TcpClient tcpClient)
         {
-            server = NetMain.ServerInstance as Server<T>;
-            isActive = true;
-            this.tcpClient = tcpClient;
+            ConnectedServer = NetMain.ServerInstance as Server<T>;
+            Active = true;
+            this.TcpClient = tcpClient;
             tcpClient.NoDelay = false;
-            stream = tcpClient.GetStream();
-            packetStream = new PacketStream(stream, true, () => false);
-            packetStream.clientConnection = this;
-            packetStream.OnDisconnected += () =>
+            Stream = tcpClient.GetStream();
+            PacketStream = new PacketStream(Stream, true);
+            PacketStream.clientConnection = this;
+            PacketStream.OnDisconnected += () =>
             {
-                NetMain.ServerLogger.Log("Kicking " + address + " because they kicked us first and we're mad");
+                NetMain.ServerLogger.Log("Kicking " + Address + " because they kicked us first and we're mad");
                 Dispose();
             };
-            packetStream.logger = NetMain.ServerLogger;
-            address = (tcpClient.Client.RemoteEndPoint as IPEndPoint).Address;
-            connectionStarted = DateTime.UtcNow;
+            Address = (tcpClient.Client.RemoteEndPoint as IPEndPoint).Address;
+            ConnectionStartTime = DateTime.UtcNow;
         }
         protected ClientConnection()
         {
-            isActive = true;
+            Active = true;
         }
 
         /// <summary>
@@ -66,21 +63,27 @@ namespace SupaStuff.Net.ServerSide
         /// <param name="packet"></param>
         public virtual void SendPacket(Packet packet)
         {
-            packetStream.SendPacket(packet);
+            PacketStream.SendPacket(packet);
         }
         public virtual void RecievePacket(Packet packet)
         {
-            packetStream.HandleIncomingPacket(packet);
+            PacketStream.HandleIncomingPacket(packet);
         }
         public virtual void Update()
         {
-            if (!isActive) Console.WriteLine("Wait, why am I still being updated?");
-            packetStream.Update();
-            if (!finishAuth)
+            if (!Active)
             {
-                if (SupaMath.TimeSince(connectionStarted) > 10)
+                Console.WriteLine("Wait, why am I still being updated?");
+                Dispose();
+                return;
+            }
+
+            PacketStream.Update();
+            if (!FinishedAuth)
+            {
+                if (SupaMath.TimeSince(ConnectionStartTime) > 10)
                 {
-                    NetMain.ServerLogger.Log("Shutting down connection to " + address + " because they were unable to authorize themselves");
+                    NetMain.ServerLogger.Log("Shutting down connection to " + Address + " because they were unable to authorize themselves");
                     Dispose();
                 }
             }
@@ -93,15 +96,15 @@ namespace SupaStuff.Net.ServerSide
         /// </param>
         public virtual void Dispose()
         {
-            if (!isActive) return;
-            isActive = false;
-            NetMain.ServerLogger.Log("Connection to client " + address + " terminated");
-            server.Kick(this);
-            tcpClient.Dispose();
-            stream.Close();
-            stream.Dispose();
-            packetStream.Dispose();
-            isActive = false;
+            if (!Active) return;
+            Active = false;
+            NetMain.ServerLogger.Log("Connection to client " + Address + " terminated");
+            ConnectedServer.Kick(this);
+            TcpClient?.Dispose();
+            Stream?.Close();
+            Stream?.Dispose();
+            PacketStream?.Dispose();
+            Active = false;
             DisposeEvent();
         }
         public event Action OnDispose;
@@ -117,10 +120,5 @@ namespace SupaStuff.Net.ServerSide
         {
             SendPacket(new S2CKickPacket());
         }
-    }
-    public enum HandshakeStage
-    {
-        unstarted,
-        complete
     }
 }

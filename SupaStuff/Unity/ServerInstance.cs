@@ -31,17 +31,17 @@ namespace SupaStuff.Unity
         }
         private void FixedUpdate()
         {
-            if (server != null && server.isActive) server.Update();
+            if (server != null && server.Active) server.Update();
         }
         public void InitializeDedicated(int maxConnections, int port, byte[] password)
         {
             server = new Server<T>(maxConnections, port, password);
-            server.localConnection.Dispose();
+            server.LocalConnection.Dispose();
         }
         public void InitializeLocal(int maxConnections, int port, byte[] password)
         {
             server = new Server<T>(maxConnections, port, password);
-            ClientInstance<T>.Instance.InitializeLocal(server.localConnection);
+            ClientInstance<T>.Instance.InitializeLocal(server.LocalConnection);
         }
     }
 }

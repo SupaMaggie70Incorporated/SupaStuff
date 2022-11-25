@@ -46,12 +46,12 @@ namespace SupaStuff.Net.Example
                 conn.SendPacket(new ExamplePacket2());
             };
             */
-            Main.NetLogger.Log("Starting Server at\n     " + NetMain.host.ToString() + ":" + testServer.port);
+            Main.NetLogger.Log("Starting Server at\n     " + NetMain.Host.ToString() + ":" + testServer.Port);
 
 
             Console.ReadKey();
 
-            client = new ClientSide.Client(NetMain.host, port, password);
+            client = new ClientSide.Client(NetMain.Host, port, password);
             Main.NetLogger.Log("Client Started");
 
             Task task = new Task(updateLoop);

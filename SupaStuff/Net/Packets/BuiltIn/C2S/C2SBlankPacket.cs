@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SupaStuff.Net.Packets.BuiltIn
 {
+    /// <summary>
+    /// This packet is to tell the server to keep the connection alive if no other packets were sent recently
+    /// </summary>
     [APacket(-194752, false)]
     internal class C2SBlankPacket : Packet
     {
@@ -23,7 +26,7 @@ namespace SupaStuff.Net.Packets.BuiltIn
         {
         }
 
-        public static bool IsAllowedSize(int size)
+        public static new bool IsAllowedSize(int size)
         {
             return size == 0;
         }

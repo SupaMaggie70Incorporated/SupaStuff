@@ -20,12 +20,12 @@ namespace SupaStuff.Net
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    host = ip;
+                    Host = ip;
                     return;
                 }
             }
         }
-        public static IPAddress host { get; private set; }
+        public static IPAddress Host { get; private set; }
         public static Client ClientInstance { get; internal set; }
         public static IServer ServerInstance { get;internal set; }
 

@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using System.Reflection;
 using SupaStuff.Net.ClientSide;
 using SupaStuff.Net.ServerSide;
+using SupaStuff.Util;
+
 namespace SupaStuff.Net.Packets
 {
     public abstract class Packet : IDisposable
     {
-        internal byte[] data;
+        internal byte[] Data;
         public static bool IsAllowedSize(int size)
         {
             return true;
@@ -43,33 +45,33 @@ namespace SupaStuff.Net.Packets
                 Func<byte[], Packet> func = PacketTypesFinder.GetConstructor(packetid, isS2C);
                 if (func == null)
                 {
-                    throw new PacketException($"Invalid {(isS2C ? "S2C" : "C2S")} packet id: {packetid.ToString()} does not match any {(isS2C ? "S2C" : "C2S")} ids!");
+                    throw new PacketException($"Invalid {(isS2C ? "S2C" : "C2S")} packet id: {packetid} does not match any {(isS2C ? "S2C" : "C2S")} ids!");
                 }
                 packet = func(packetbytes);
             }
-            catch
+            catch (Exception e)
             {
-
+                NetMain.NetLogger.Error(e);
             }
             if (packet == null)
-            {
-                throw new PacketException("Constructor failure somehow idk");
+            { 
+                throw new PacketException($"Packet constructor for packet type {(isS2C ? PacketTypesFinder.S2CTypes[packetid] : PacketTypesFinder.C2STypes[packetid]).Type.ToString()}");
             }
             return packet;
         }
         internal byte[] GenerateHeader()
         {
+            Data = Bytify();
             byte[] arr = new byte[8];
             byte[] id = BitConverter.GetBytes(GetID());
-            data = Bytify();
-            byte[] size = BitConverter.GetBytes(data.Length);
+            byte[] size = BitConverter.GetBytes(Data.Length);
             Buffer.BlockCopy(id, 0, arr, 0, 4);
             Buffer.BlockCopy(size, 0, arr, 4, 4);
             return arr;
         }
         protected abstract byte[] Bytify();
         public abstract void Execute(IClientConnection sender);
-        public int GetID()
+        public virtual int GetID()
         {
             return GetType().GetCustomAttribute<APacket>().PacketID;
         }

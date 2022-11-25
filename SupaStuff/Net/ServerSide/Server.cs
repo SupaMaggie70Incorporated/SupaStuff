@@ -7,64 +7,68 @@ using System.Net;
 using System.Net.Sockets;
 
 using SupaStuff.Net.Packets;
-
+using SupaStuff.Net.Packets.BuiltIn;
 
 namespace SupaStuff.Net.ServerSide
 {
     public class Server<T> : IServer
     {
-        public TcpListener listener { get; private set; }
-        public int port = 12345;
-        public bool isActive { get; private set; }
-        public LocalClientConnection<T> localConnection { get; private set; }
+        public TcpListener Listener { get; private set; }
+        public int Port = 12345;
+        public bool Active { get; private set; }
+        public LocalClientConnection<T> LocalConnection { get; private set; }
         public List<IClientConnection> connections { get; private set; }
-        public readonly int maxConnections;
+        public readonly int MaxConnections;
         public readonly byte[] Password;
         public byte[] GetPassword() => Password;
-        public bool IsActive() => isActive;
-        public IClientConnection GetLocalConnection() => localConnection;
+        public bool IsActive() => Active;
+        public IClientConnection GetLocalConnection() => LocalConnection;
         public List<IClientConnection> GetConnections() => connections;
         public Server(int maxConnections, int port, byte[] password)
         {
             this.Password = password;
-            this.port = port;
-            isActive = true;
+            this.Port = port;
+            Active = true;
             NetMain.ServerInstance = this;
-            this.maxConnections = maxConnections;
+            this.MaxConnections = maxConnections;
             connections = new List<IClientConnection>(maxConnections);
-            listener = new TcpListener(NetMain.host, port);
-            StartListening();
+            Listener = new TcpListener(NetMain.Host, port);
             NetMain.ServerLogger.Log("Server started");
-            listener.BeginAcceptTcpClient(new System.AsyncCallback(ClientConnected), null);
-            NetMain.ServerLogger.Log("Accepting tcp client");
-            localConnection = LocalClientConnection<T>.LocalClient(this);
-            connections.Add(localConnection);
+            LocalConnection = LocalClientConnection<T>.LocalClient(this);
+            connections.Add(LocalConnection);
             NetMain.NetLogger.Log("Server started!");
         }
         public void StartListening()
         {
-            listener.Start();
+            Listener.Start();
         }
         public void StopListening()
         {
-            listener.Stop();
+            Listener.Stop();
         }
 
         public void Update()
         {
-            if (!isActive) return;
+            if (!Active) return;
+            while (Listener.Pending())
+            {
+                ClientConnected(new ClientConnection<T>(Listener.AcceptTcpClient()));
+            }
             for (int i = 0; i < connections.Count; i++)
             {
                 IClientConnection connection = connections[i];
+
+
                 if (connection == null)
                 {
                     connections.RemoveAt(i);
                     i--;
                 }
-                else if (!isActive)
+                else if (!Active)
                 {
-                    NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " because they should've already been kicked");
+                    NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " because they should've already been kicked, as the server is shut down");
                     connections[i].Dispose();
+                    
                     i--;
                     continue;
                 }
@@ -79,23 +83,22 @@ namespace SupaStuff.Net.ServerSide
                 }
             }
         }
-        internal virtual void ClientConnected(IAsyncResult ar)
+        internal virtual void ClientConnected(ClientConnection<T> connection)
         {
             try
             {
-                ClientConnection<T> connection = new ClientConnection<T>(listener.EndAcceptTcpClient(ar));
-                NetMain.ServerLogger.Log("Attempted connection from " + connection.address + "!");
-                if (connections.Count + 1 < maxConnections)
+                NetMain.ServerLogger.Log("Attempted connection from " + connection.Address + "!");
+                if (connections.Count + 1 < MaxConnections)
                 {
                     connections.Add(connection);
                     ClientConnectedEvent(connection);
                 }
                 else
                 {
-                    NetMain.ServerLogger.Log("Rejected connection from " + connection.address + " because we already have the max number of concurrent connections, " + maxConnections + "!");
+                    NetMain.ServerLogger.Log("Rejected connection from " + connection.Address + " because we already have the max number of concurrent connections, " + MaxConnections + "!");
+                    connection.SendPacket(new S2CKickPacket("The server is already full!"));
                     connection.Dispose();
                 }
-                listener.BeginAcceptTcpClient(new System.AsyncCallback(ClientConnected), null);
             }
             catch
             {
@@ -107,8 +110,8 @@ namespace SupaStuff.Net.ServerSide
         }
         public void Dispose()
         {
-            if (!isActive) return;
-            isActive = false;
+            if (!Active) return;
+            Active = false;
             //List<ClientConnection> connections = this.connections;
             //this.connections = null;
             foreach (IClientConnection connection in connections)
@@ -118,7 +121,7 @@ namespace SupaStuff.Net.ServerSide
                 Kick(connection, "Server is shutting down.");
 
             }
-            listener.Stop();
+            Listener.Stop();
             
             connections.Clear();
             NetMain.NetLogger.Log("Closing server");
@@ -168,7 +171,7 @@ namespace SupaStuff.Net.ServerSide
         /// <param name="connection"></param>
         public void Kick(IClientConnection connection)
         {
-            NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " because we want to kick him idk");
+            NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " without telling them");
             connection.Dispose();
             connections.Remove(connection);
 
@@ -179,7 +182,7 @@ namespace SupaStuff.Net.ServerSide
         /// <returns></returns>
         public IClientConnection MakeLocalConnection()
         {
-            if (connections.Count + 1 == maxConnections) return null;
+            if (connections.Count + 1 == MaxConnections) return null;
             IClientConnection connection = LocalClientConnection<T>.LocalClient(this);
             connections.Add(connection);
             return connection;

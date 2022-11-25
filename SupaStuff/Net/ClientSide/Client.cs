@@ -15,15 +15,15 @@ namespace SupaStuff.Net.ClientSide
 {
     public class Client : IDisposable
     {
-        public TcpClient tcpClient { get; private set; }
-        public NetworkStream stream { get; private set; }
+        public TcpClient TcpClient { get; private set; }
+        public NetworkStream Stream { get; private set; }
         public bool IsLocal { get; private set; }
         public bool IsActive { get; internal set; }
         public IClientConnection localConnection { get; private set; }
-        public PacketStream packetStream { get; private set; }
+        PacketStream packetStream;
 
-        public IPAddress address;
-        public readonly int port;
+        public IPAddress Address;
+        public readonly int Port;
 
         public byte[] Password;
         /// <summary>
@@ -37,24 +37,24 @@ namespace SupaStuff.Net.ClientSide
             //External client
             NetMain.ClientInstance = this;
             //New client to connect with
-            tcpClient = new TcpClient();
-            this.address = ip;
-            this.port = port;
+            TcpClient = new TcpClient();
+            this.Address = ip;
+            this.Port = port;
             Password = password;
             NetMain.ClientLogger.Log("Client started!");
-            tcpClient.BeginConnect(ip, port, new AsyncCallback(OnFinishConnection), null);
+            TcpClient.BeginConnect(ip, port, new AsyncCallback(OnFinishConnection), null);
         }
         public void OnFinishConnection(IAsyncResult ar)
         {
-            tcpClient.EndConnect(ar);
-            if (!tcpClient.Connected)
+            TcpClient.EndConnect(ar);
+            if (!TcpClient.Connected)
             {
                 Dispose();
                 return;
             }
             IsActive = true;
-            stream = tcpClient.GetStream();
-            packetStream = new PacketStream(stream, false, () => { Dispose(); return false; });
+            Stream = TcpClient.GetStream();
+            packetStream = new PacketStream(Stream, false);
             packetStream.OnDisconnected += Dispose;
             SendPacket(new C2SWelcomePacket());
             NetMain.ClientLogger.Log("Client successfully connected!");
@@ -107,7 +107,7 @@ namespace SupaStuff.Net.ClientSide
                 try
                 {
                     packetStream.Update();
-                    if (!tcpClient.Connected) Dispose();
+                    if (!TcpClient.Connected) Dispose();
                 }
                 catch
                 {
@@ -116,8 +116,7 @@ namespace SupaStuff.Net.ClientSide
                 }
             }
         }
-        public delegate void OnMessage(Packet packet);
-        public event OnMessage onMessage;
+        public event Action<Packet> OnMessage;
         /// <summary>
         /// GC assister
         /// </summary>
@@ -127,10 +126,8 @@ namespace SupaStuff.Net.ClientSide
             IsActive = false;
             NetMain.ClientLogger.Log("Client closed!");
             NetMain.ClientInstance = null;
-            stream.Close();
-            stream.Dispose();
-            tcpClient.Close();
-            tcpClient.Dispose();
+            Stream.Close();
+            TcpClient?.Close();
             packetStream.Dispose();
             DisposeEvent();
         }
@@ -138,10 +135,6 @@ namespace SupaStuff.Net.ClientSide
         void DisposeEvent()
         {
             if (OnDispose != null) OnDispose.Invoke();
-        }
-        public void Disconnect()
-        {
-            SendPacket(new C2SDisconnectPacket());
         }
         public void Disconnect(string message)
         {

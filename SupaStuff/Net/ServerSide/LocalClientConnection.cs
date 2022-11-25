@@ -14,10 +14,10 @@ namespace SupaStuff.Net.ServerSide
 {
     public class LocalClientConnection<T> : ClientConnection<T>
     {
-        public ClientSide.Client client { get; internal set; }
+        public ClientSide.Client Client { get; internal set; }
         public override IPAddress GetAddress() => new IPAddress(new byte[] { 127, 0, 0, 1 });
         public override bool IsLocal() => true;
-        public override bool IsActive() => server.IsActive();
+        public override bool IsActive() => ConnectedServer.IsActive();
         public override bool AuthFinished() => true;
         public override void FinishAuth()
         {
@@ -25,9 +25,9 @@ namespace SupaStuff.Net.ServerSide
         }
         protected LocalClientConnection(IServer server)
         {
-            client = new ClientSide.Client(this);
+            Client = new ClientSide.Client(this);
             NetMain.ClientLogger.Log("Local client initialized");
-            this.server = server as Server<T>;
+            this.ConnectedServer = server as Server<T>;
         }
         
         internal static LocalClientConnection<T> LocalClient(IServer server)
@@ -36,7 +36,7 @@ namespace SupaStuff.Net.ServerSide
         }
         public override void SendPacket(Packet packet)
         {
-            client.RecievePacket(packet);
+            Client.RecievePacket(packet);
         }
         public override void RecievePacket(Packet packet)
         {

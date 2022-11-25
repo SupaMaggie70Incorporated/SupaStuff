@@ -43,13 +43,13 @@ namespace SupaStuff.Unity
             client = new Client(address, port, password);
             client.OnConnected += () =>
             {
-                client.packetStream.OnDisconnected += () => { Debug.Log("Disconnected"); };
+                client.OnDispose += () => { Debug.Log("Disconnected"); };
             };
         }
         internal protected void InitializeLocal(LocalClientConnection<T> connection)
         {
             Debug.Log("Started local client");
-            client = connection.client;
+            client = connection.Client;
             Debug.Log("Finished");
         }
         public void OnFailedConnection()

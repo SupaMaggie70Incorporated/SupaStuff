@@ -6,9 +6,9 @@ namespace SupaStuff.Net.Packets
 {
     internal struct PacketTypeInfo
     {
-        public Type type;
-        public Func<byte[], Packet> constructor;
-        public Func<int, bool> isRightLength;
+        public Type Type;
+        public Func<byte[], Packet> Constructor;
+        public Func<int, bool> IsRightLength;
 
     }
 }
