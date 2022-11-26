@@ -25,6 +25,8 @@ namespace SupaStuff.Net.ClientSide
         public IPAddress Address;
         public readonly int Port;
 
+        public bool Disposed = false;
+
         public byte[] Password;
         /// <summary>
         /// Create a client and attempt to connect to server
@@ -123,6 +125,7 @@ namespace SupaStuff.Net.ClientSide
         public void Dispose()
         {
             if (!IsActive) return;
+            Disposed = true;
             IsActive = false;
             NetMain.ClientLogger.Log("Client closed!");
             NetMain.ClientInstance = null;

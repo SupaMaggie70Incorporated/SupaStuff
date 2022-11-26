@@ -24,6 +24,7 @@ namespace SupaStuff.Net.ServerSide
         public bool IsActive() => Active;
         public IClientConnection GetLocalConnection() => LocalConnection;
         public List<IClientConnection> GetConnections() => connections;
+        public bool Listening = false;
         public Server(int maxConnections, int port, byte[] password)
         {
             this.Password = password;
@@ -41,18 +42,23 @@ namespace SupaStuff.Net.ServerSide
         public void StartListening()
         {
             Listener.Start();
+            Listening = true;
         }
         public void StopListening()
         {
             Listener.Stop();
+            Listening = false;
         }
 
         public void Update()
         {
             if (!Active) return;
-            while (Listener.Pending())
+            if(Listening)
             {
-                ClientConnected(new ClientConnection<T>(Listener.AcceptTcpClient()));
+                while (Listener.Pending())
+                {
+                    ClientConnected(new ClientConnection<T>(Listener.AcceptTcpClient()));
+                }
             }
             for (int i = 0; i < connections.Count; i++)
             {

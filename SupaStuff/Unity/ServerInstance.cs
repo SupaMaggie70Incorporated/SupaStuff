@@ -13,11 +13,11 @@ using SupaStuff.Net.ServerSide;
 namespace SupaStuff.Unity
 {
     [UnitySpecific]
-    public class ServerInstance<T> : MonoBehaviour
+    public abstract class ServerInstance<T> : MonoBehaviour
     {
         public static ServerInstance<T> Instance;
         public Server<T> server;
-        private void Awake()
+        protected virtual void Awake()
         {
             if (Instance == null)
             {
@@ -29,19 +29,21 @@ namespace SupaStuff.Unity
                 Destroy(this);
             }
         }
-        private void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             if (server != null && server.Active) server.Update();
         }
-        public void InitializeDedicated(int maxConnections, int port, byte[] password)
+        public virtual void InitializeDedicated(int maxConnections, int port, byte[] password)
         {
             server = new Server<T>(maxConnections, port, password);
             server.LocalConnection.Dispose();
         }
-        public void InitializeLocal(int maxConnections, int port, byte[] password)
+        public virtual void InitializeLocal(int maxConnections, int port, byte[] password)
         {
             server = new Server<T>(maxConnections, port, password);
+            server.OnClientConnected += (IClientConnection connection) => OnClientConnected(connection as ClientConnection<T>);
             ClientInstance<T>.Instance.InitializeLocal(server.LocalConnection);
         }
+        public abstract void OnClientConnected(ClientConnection<T> connection);
     }
 }

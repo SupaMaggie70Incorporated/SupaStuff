@@ -13,16 +13,16 @@ using SupaStuff.Net.ClientSide;
 using SupaStuff.Net.ServerSide;
 using SupaStuff.Net.Packets;
 using static System.Net.Mime.MediaTypeNames;
-
+using SupaStuff.Net;
 
 namespace SupaStuff.Unity
 {
     [UnitySpecific]
-    public class ClientInstance<T> : MonoBehaviour
+    public abstract class ClientInstance<T> : MonoBehaviour
     {
         public static ClientInstance<T> Instance = null;
         public Client client = null;
-        private void Awake()
+        protected virtual void Awake()
         {
             if (Instance == null)
             {
@@ -34,32 +34,37 @@ namespace SupaStuff.Unity
                 Destroy(this);
             }
         }
-        private void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
-            if (client != null && client.IsActive) client.Update();
+            if (client == null) return;
+            if (client.IsActive) client.Update();
+            if (client.Disposed)
+            {
+                OnFailedConnection();
+                client = null;
+            }
         }
-        public void Initialize(IPAddress address, int port, byte[] password)
+        public virtual void Initialize(IPAddress address, int port, byte[] password)
         {
             client = new Client(address, port, password);
             client.OnConnected += () =>
             {
-                client.OnDispose += () => { Debug.Log("Disconnected"); };
+                client.OnDispose += () => { NetMain.ClientLogger.Log("Connected"); };
             };
         }
-        internal protected void InitializeLocal(LocalClientConnection<T> connection)
+        internal protected virtual void InitializeLocal(LocalClientConnection<T> connection)
         {
-            Debug.Log("Started local client");
+            NetMain.ClientLogger.Log("Started local client");
             client = connection.Client;
-            Debug.Log("Finished");
         }
-        public void OnFailedConnection()
+        protected virtual void OnFailedConnection()
         {
-            Debug.Log("Client Failed to Connect!");
+            NetMain.ClientLogger.Log("Connection failed");
             client.OnConnected -= OnConnected;
             client.OnDispose -= OnFailedConnection;
             client = null;
         }
-        public void OnConnected()
+        protected virtual void OnConnected()
         {
             Debug.Log("Client Successfully Connected!");
             Instance.client.OnConnected -= OnConnected;
