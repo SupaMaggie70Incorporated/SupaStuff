@@ -28,6 +28,11 @@ namespace SupaStuff.Net.ClientSide
         public bool Disposed = false;
 
         public byte[] Password;
+
+        /// <summary>
+        /// Packets that were queued before connection completed
+        /// </summary>
+        private Queue<Packet> UnsentPackets = new Queue<Packet>();
         /// <summary>
         /// Create a client and attempt to connect to server
         /// </summary>
@@ -61,6 +66,13 @@ namespace SupaStuff.Net.ClientSide
             SendPacket(new C2SWelcomePacket());
             NetMain.ClientLogger.Log("Client successfully connected!");
             if (OnConnected != null) OnConnected.Invoke();
+
+            foreach(Packet packet in UnsentPackets)
+            {
+                packetStream.SendPacket(packet);
+            }
+            UnsentPackets?.Clear();
+            UnsentPackets = null;
             return;
         }
         public event Action OnConnected;
@@ -86,7 +98,17 @@ namespace SupaStuff.Net.ClientSide
             try
             {
                 if (IsLocal) localConnection.RecievePacket(packet);
-                else packetStream.SendPacket(packet);
+                else
+                {
+                    if(IsActive)
+                    {
+                        packetStream.SendPacket(packet);
+                    }
+                    else if(!Disposed)
+                    {
+                        UnsentPackets.Enqueue(packet);
+                    }
+                }
             }
             catch
             {
@@ -133,6 +155,8 @@ namespace SupaStuff.Net.ClientSide
             TcpClient?.Close();
             packetStream.Dispose();
             DisposeEvent();
+            UnsentPackets?.Clear();
+            UnsentPackets = null;
         }
         public event Action OnDispose;
         void DisposeEvent()
