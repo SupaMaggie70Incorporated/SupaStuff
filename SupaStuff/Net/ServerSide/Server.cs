@@ -101,7 +101,7 @@ namespace SupaStuff.Net.ServerSide
                 }
                 else
                 {
-                    NetMain.ServerLogger.Log("Rejected connection from " + connection.Address + " because we already have the max number of concurrent connections, " + MaxConnections + "!");
+                    NetMain.ServerLogger.Warn("Rejected connection from " + connection.Address + " because we already have the max number of concurrent connections, " + MaxConnections + "!");
                     connection.SendPacket(new S2CKickPacket("The server is already full!"));
                     connection.Dispose();
                 }
@@ -155,7 +155,7 @@ namespace SupaStuff.Net.ServerSide
                 }
                 catch
                 {
-                    NetMain.ServerLogger.Log($"We couldnt send a packet to {connection.GetAddress()} because the connection was closed");
+                    NetMain.ServerLogger.Warn($"We couldnt send a packet to {connection.GetAddress()} because the connection was closed");
                     Dispose();
                 }
             }
@@ -169,7 +169,14 @@ namespace SupaStuff.Net.ServerSide
         {
             NetMain.NetLogger.Log("Kicking " + connection.GetAddress() + " for reason: " + message);
             connection.Kick(message);
-            connections.Remove(connection);
+            foreach (IClientConnection conn in connections)
+            {
+                if (conn == connection)
+                {
+                    conn.Kick();
+                    break;
+                }
+            }
         }
         /// <summary>
         /// Instantly kick someone
@@ -179,7 +186,14 @@ namespace SupaStuff.Net.ServerSide
         {
             NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " without telling them");
             connection.Dispose();
-            connections.Remove(connection);
+            foreach(IClientConnection conn in connections)
+            {
+                if (conn == connection)
+                {
+                    conn.Kick();
+                    break;
+                }
+            }
 
         }
         /// <summary>

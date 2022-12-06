@@ -45,7 +45,7 @@ namespace SupaStuff.Net.ServerSide
             PacketStream.clientConnection = this;
             PacketStream.OnDisconnected += () =>
             {
-                NetMain.ServerLogger.Log("Kicking " + Address + " because they kicked us first and we're mad");
+                NetMain.ServerLogger.Log("Kicking " + Address + " because they already disconnected");
                 Dispose();
             };
             Address = (tcpClient.Client.RemoteEndPoint as IPEndPoint).Address;
@@ -73,7 +73,6 @@ namespace SupaStuff.Net.ServerSide
         {
             if (!Active)
             {
-                Console.WriteLine("Wait, why am I still being updated?");
                 Dispose();
                 return;
             }
@@ -83,7 +82,7 @@ namespace SupaStuff.Net.ServerSide
             {
                 if (SupaMath.TimeSince(ConnectionStartTime) > 10)
                 {
-                    NetMain.ServerLogger.Log("Shutting down connection to " + Address + " because they were unable to authorize themselves");
+                    NetMain.ServerLogger.Warn("Shutting down connection to " + Address + " because they were unable to authorize themselves");
                     Dispose();
                 }
             }

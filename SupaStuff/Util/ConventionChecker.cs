@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SupaStuff.Util
 {
-    public class ConventionChecker
+    internal class ConventionChecker
     {
         public List<string> _problems;
         private int _problemCount = 0;

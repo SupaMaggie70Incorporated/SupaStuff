@@ -24,7 +24,7 @@ namespace SupaStuff.Net.Packets.BuiltIn
             }
             else
             {
-                NetMain.ServerLogger.Log(sender.GetAddress() + " entered the wrong password! It was " + Encoding.ASCII.GetString(NetMain.ServerInstance.GetPassword()) + " but they thought it was " + Encoding.ASCII.GetString(Bytes));
+                NetMain.ServerLogger.Warn(sender.GetAddress() + " entered the wrong password! It was " + Encoding.ASCII.GetString(NetMain.ServerInstance.GetPassword()) + " but they thought it was " + Encoding.ASCII.GetString(Bytes));
                 sender.Dispose();
             }
         }

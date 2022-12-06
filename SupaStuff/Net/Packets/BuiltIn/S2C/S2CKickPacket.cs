@@ -17,7 +17,7 @@ namespace SupaStuff.Net.Packets.BuiltIn
         }
         public override void Execute(IClientConnection sender)
         {
-            NetMain.ClientLogger.Log("You have been kicked from the server for:\n    " + Message);
+            NetMain.ClientLogger.Warn("You have been kicked from the server for:\n    " + Message);
             NetMain.ClientInstance?.Dispose();
         }
         public S2CKickPacket(byte[] bytes)

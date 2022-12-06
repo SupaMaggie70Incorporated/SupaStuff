@@ -59,7 +59,7 @@ namespace SupaStuff.Unity
         }
         protected virtual void OnFailedConnection()
         {
-            NetMain.ClientLogger.Log("Connection failed");
+            NetMain.ClientLogger.Warn("Connection failed");
             client.OnConnected -= OnConnected;
             client.OnDispose -= OnFailedConnection;
             client = null;

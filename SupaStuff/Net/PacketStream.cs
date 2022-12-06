@@ -70,6 +70,8 @@ namespace SupaStuff.Net
                         {
                             if (!PacketTypesFinder.C2STypes[packetID].IsRightLength(packetSize))
                             {
+                                NetMain.ServerLogger.Error($"Disconnecting client because their packet of type {PacketTypesFinder.C2STypes[packetID].Type.FullName} had length {packetSize} which was not valid.");
+
                                 Dispose();
                                 return false;
                             }
@@ -78,6 +80,8 @@ namespace SupaStuff.Net
                         {
                             if (!PacketTypesFinder.S2CTypes[packetID].IsRightLength(packetSize))
                             {
+                                NetMain.ClientLogger.Error($"Disconnecting because their packet of type {PacketTypesFinder.S2CTypes[packetID].Type.FullName} had length {packetSize} which was not valid.");
+
                                 Dispose();
                                 return false;
                             }
@@ -107,10 +111,12 @@ namespace SupaStuff.Net
                     return false;
                 }
             }
-            catch
+            catch(Exception e)
             {
-                logger.Log("Error recieving packet, disconnecting");
-                
+                logger.Warn("Error recieving packet, disconnecting. Error message shown below.");
+                logger.Error(e);
+
+
                 Dispose();
                 return false;
             }
@@ -145,7 +151,7 @@ namespace SupaStuff.Net
                 Type type = packet.GetType();
                 if (IsServer && !clientConnection.AuthFinished() && type != typeof(C2SWelcomePacket))
                 {
-                    logger.Log("We recieved a packet other than the C2SWelcomePacket as our first packet, so fuck off hacker");
+                    logger.Warn("We recieved a packet other than the C2SWelcomePacket as our first packet, closing connection");
                     Dispose();
                     return;
                 }
@@ -155,21 +161,24 @@ namespace SupaStuff.Net
                 }
                 try
                 {
-                    packet.Execute(clientConnection);
+                    if (!Packet.ExecutePacket(packet, false, clientConnection))
+                    {
+                        Dispose();
+                    }
                 }
                 catch(Exception e)
                 {
-                    logger.Log("We had issues handling a packet, so we're gonna commit die");
+                    logger.Warn("We had issues handling a packet; closing");
                     Dispose();
 
-                    logger.Log("Packet of type " + type.FullName + " could not be recieved:\n" + e.ToString());
+                    logger.Warn("Packet of type " + type.FullName + " could not be recieved:\n" + e.ToString());
                 }
             }
             catch
             {
                 if (this != null)
                 {
-                    logger.Log("We had issues handling a packet, so we're gonna commit die");
+                    logger.Warn("We had issues handling a packet; closing");
                     Dispose();
                 }
             }
@@ -240,7 +249,7 @@ namespace SupaStuff.Net
             }
             if (IsServer && SupaMath.TimeBetween(lastCheckedIn, now) > MaxUncheckedTime)
             {
-                logger.Log("We kicked a client because they waited too long to check in");
+                logger.Warn("We kicked a client because they waited too long to check in");
                 Dispose();
             }
 
@@ -267,7 +276,7 @@ namespace SupaStuff.Net
                 stream.Write(packet.Data, 0, packet.Data.Length);
             }catch
             {
-                logger.Log("Failed to send a packet, probably because they closed their side");
+                logger.Warn("Failed to send a packet, probably because they closed their side. Either way, closing");
                 Dispose();
             }
 
@@ -295,11 +304,11 @@ namespace SupaStuff.Net
             OnDisconnected?.Invoke();
             if (IsServer)
             {
-                NetMain.ServerLogger.Log("Client decided to disconnect!");
+                NetMain.ServerLogger.Warn("Client decided to disconnect!");
             }
             else
             {
-                NetMain.ClientLogger.Log("Server aborted connection!");
+                NetMain.ClientLogger.Warn("Server aborted connection!");
             }
         }
 

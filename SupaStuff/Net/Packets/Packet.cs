@@ -7,6 +7,7 @@ using System.Reflection;
 using SupaStuff.Net.ClientSide;
 using SupaStuff.Net.ServerSide;
 using SupaStuff.Util;
+using System.Net.Sockets;
 
 namespace SupaStuff.Net.Packets
 {
@@ -16,26 +17,6 @@ namespace SupaStuff.Net.Packets
         public static bool IsAllowedSize(int size)
         {
             return true;
-        }
-        public static Packet GetPacket(byte[] contents, bool isS2C)
-        {
-            if (contents.Length < 8)
-            {
-                if (isS2C)
-                {
-                    throw new PacketException("Incomplete packet recieved!");
-                }
-                else
-                {
-                    throw new PacketException("Incomplete packet recieved!");
-                }
-                throw new PacketException($"Incomplete packet recieved from {(isS2C ? "server" : "client")}!");
-            }
-            int packetid = BitConverter.ToInt32(contents, 0);
-            int size = BitConverter.ToInt32(contents, 4);
-            byte[] bytes = new byte[contents.Length - 8];
-            Buffer.BlockCopy(contents, 8, bytes, 0, contents.Length - 8);
-            return GetPacket(packetid, bytes, isS2C);
         }
         public static Packet GetPacket(int packetid, byte[] packetbytes, bool isS2C)
         {
@@ -47,10 +28,12 @@ namespace SupaStuff.Net.Packets
                 {
                     throw new PacketException($"Invalid {(isS2C ? "S2C" : "C2S")} packet id: {packetid} does not match any {(isS2C ? "S2C" : "C2S")} ids!");
                 }
+                
                 packet = func(packetbytes);
             }
             catch (Exception e)
             {
+                NetMain.NetLogger.Error($"Error reconstructing packet of type {PacketTypesFinder.GetPacket(packetid, isS2C).FullName}. Error shown below.");
                 NetMain.NetLogger.Error(e);
             }
             if (packet == null)
@@ -61,7 +44,16 @@ namespace SupaStuff.Net.Packets
         }
         internal byte[] GenerateHeader()
         {
-            Data = Bytify();
+            try
+            {
+                Data = Bytify();
+            }
+            catch(Exception e)
+            {
+                NetMain.NetLogger.Error($"Error executing packet of type {GetType().FullName} as it threw an error shown below");
+                NetMain.NetLogger.Error(e.ToString());
+                Data = new byte[0];
+            }
             byte[] arr = new byte[8];
             byte[] id = BitConverter.GetBytes(GetID());
             byte[] size = BitConverter.GetBytes(Data.Length);
@@ -71,12 +63,29 @@ namespace SupaStuff.Net.Packets
         }
         protected abstract byte[] Bytify();
         public abstract void Execute(IClientConnection sender);
+
         public virtual int GetID()
         {
             return GetType().GetCustomAttribute<APacket>().PacketID;
         }
         public void Dispose()
         {
+        }
+        public static bool ExecutePacket(Packet packet, bool isS2C, IClientConnection sender)
+        {
+            try
+            {
+                packet.Execute(sender);
+                return true;
+            }
+            catch(Exception e)
+            {
+                Logger logger = isS2C ? NetMain.ClientLogger : NetMain.ServerLogger;
+                logger.Error($"Error executing packet of type {packet.GetType().FullName} as it threw an error shown below");
+                logger.Error(e.ToString());
+                return false;
+                
+            }
         }
     }
 }

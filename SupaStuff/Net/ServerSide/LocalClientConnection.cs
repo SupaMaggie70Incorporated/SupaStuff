@@ -23,6 +23,8 @@ namespace SupaStuff.Net.ServerSide
         {
 
         }
+
+        public bool Disposed = false;
         protected LocalClientConnection(IServer server)
         {
             Client = new ClientSide.Client(this);
@@ -40,7 +42,11 @@ namespace SupaStuff.Net.ServerSide
         }
         public override void RecievePacket(Packet packet)
         {
-            packet.Execute(this); 
+            if(!Packet.ExecutePacket(packet, false, this))
+            {
+                Dispose();
+                Client.Dispose();
+            }
         }
         public override void Update()
         {
@@ -48,13 +54,17 @@ namespace SupaStuff.Net.ServerSide
         }
         public override void Kick()
         {
+            Dispose();
         }
         public override void Kick(string message)
         {
+            Dispose();
         }
         public override void Dispose()
-        { 
-
+        {
+            if (Disposed) return;
+            Disposed = true;
+            ConnectedServer.Kick(this);
         }
     }
 }

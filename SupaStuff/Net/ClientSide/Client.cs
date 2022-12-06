@@ -92,7 +92,7 @@ namespace SupaStuff.Net.ClientSide
             catch
             {
                 Dispose();
-                NetMain.ClientLogger.Log("Failed sending a packet because the connection is closed");
+                NetMain.ClientLogger.Warn("Failed sending a packet because the connection is closed");
             }
         }
         public void CancelOngoingConnection()
@@ -101,7 +101,10 @@ namespace SupaStuff.Net.ClientSide
         }
         public void RecievePacket(Packet packet)
         {
-            packet.Execute(null);
+            if (!Packet.ExecutePacket(packet, false, null))
+            {
+                Dispose();
+            }
         }
         /// <summary>
         /// Try to recieve and write packets
@@ -146,7 +149,7 @@ namespace SupaStuff.Net.ClientSide
                 }
                 catch
                 {
-                    NetMain.ClientLogger.Log("Failed updating for unknown reason, closing");
+                    NetMain.ClientLogger.Error("Failed updating for unknown reason, closing");
                     Dispose();
                 }
             }
@@ -163,9 +166,9 @@ namespace SupaStuff.Net.ClientSide
             IsActive = false;
             NetMain.ClientLogger.Log("Client closed!");
             NetMain.ClientInstance = null;
-            Stream.Close();
+            Stream?.Close();
             TcpClient?.Close();
-            packetStream.Dispose();
+            packetStream?.Dispose();
             DisposeEvent();
             UnsentPackets?.Clear();
             UnsentPackets = null;

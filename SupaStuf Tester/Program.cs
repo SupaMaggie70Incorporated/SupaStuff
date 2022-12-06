@@ -47,12 +47,5 @@ namespace SupaStuff.Tester
         {
             Console.WriteLine(PerlinNoise.perlin(0.1f,0,0));
         }
-        public static void TestConventions()
-        {
-            ConventionChecker checker = new ConventionChecker();
-            checker.Check(Assembly.GetExecutingAssembly(),1024);
-            checker.LogErrors();
-            checker.WriteErrors();
-        }
     }
 }
