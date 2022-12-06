@@ -41,6 +41,7 @@ namespace SupaStuff.Net
             Packets.PacketTypesFinder.GetTypes();
             GetHost();
             Initialized = true;
+            NetLogger.Log("Setup SupaStuff for networking");
         }
         public static void Update()
         {

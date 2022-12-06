@@ -14,6 +14,7 @@ using SupaStuff.Net.ServerSide;
 using SupaStuff.Net.Packets;
 using static System.Net.Mime.MediaTypeNames;
 using SupaStuff.Net;
+using SupaStuff.Util;
 
 namespace SupaStuff.Unity
 {
@@ -24,6 +25,7 @@ namespace SupaStuff.Unity
         public Client client = null;
         protected virtual void Awake()
         {
+            Util.Logger.SetUnity();
             if (Instance == null)
             {
                 Instance = this;

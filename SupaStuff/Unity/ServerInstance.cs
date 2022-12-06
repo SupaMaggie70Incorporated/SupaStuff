@@ -19,6 +19,7 @@ namespace SupaStuff.Unity
         public Server<T> server;
         protected virtual void Awake()
         {
+            Util.Logger.SetUnity();
             if (Instance == null)
             {
                 Instance = this;
