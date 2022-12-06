@@ -29,6 +29,9 @@ namespace SupaStuff.Net.ClientSide
 
         public byte[] Password;
 
+        private bool WasConnected = false;
+        private Task ConnectionTask;
+
         /// <summary>
         /// Packets that were queued before connection completed
         /// </summary>
@@ -49,31 +52,7 @@ namespace SupaStuff.Net.ClientSide
             this.Port = port;
             Password = password;
             NetMain.ClientLogger.Log("Client started!");
-            TcpClient.BeginConnect(ip, port, new AsyncCallback(OnFinishConnection), null);
-        }
-        public void OnFinishConnection(IAsyncResult ar)
-        {
-            TcpClient.EndConnect(ar);
-            if (!TcpClient.Connected)
-            {
-                Dispose();
-                return;
-            }
-            IsActive = true;
-            Stream = TcpClient.GetStream();
-            packetStream = new PacketStream(Stream, false);
-            packetStream.OnDisconnected += Dispose;
-            SendPacket(new C2SWelcomePacket());
-            NetMain.ClientLogger.Log("Client successfully connected!");
-            if (OnConnected != null) OnConnected.Invoke();
-
-            foreach(Packet packet in UnsentPackets)
-            {
-                packetStream.SendPacket(packet);
-            }
-            UnsentPackets?.Clear();
-            UnsentPackets = null;
-            return;
+            ConnectionTask = TcpClient.ConnectAsync(ip, port);
         }
         public event Action OnConnected;
         /// <summary>
@@ -116,6 +95,10 @@ namespace SupaStuff.Net.ClientSide
                 NetMain.ClientLogger.Log("Failed sending a packet because the connection is closed");
             }
         }
+        public void CancelOngoingConnection()
+        {
+            if (ConnectionTask != null && ConnectionTask.Status == TaskStatus.Running) ConnectionTask.Dispose();
+        }
         public void RecievePacket(Packet packet)
         {
             packet.Execute(null);
@@ -125,6 +108,34 @@ namespace SupaStuff.Net.ClientSide
         /// </summary>
         public void Update()
         {
+            if(!WasConnected)
+            {
+                if (ConnectionTask.Status == TaskStatus.Faulted || ConnectionTask.Status == TaskStatus.Canceled)
+                {
+                    WasConnected = true;
+                    Dispose();
+                    return;
+                }
+                else if(ConnectionTask.Status == TaskStatus.RanToCompletion)
+                {
+                    WasConnected = true;
+                    IsActive = true;
+                    Stream = TcpClient.GetStream();
+                    packetStream = new PacketStream(Stream, false);
+                    packetStream.OnDisconnected += Dispose;
+                    SendPacket(new C2SWelcomePacket());
+                    NetMain.ClientLogger.Log("Client successfully connected!");
+                    if (OnConnected != null) OnConnected.Invoke();
+
+                    foreach (Packet packet in UnsentPackets)
+                    {
+                        packetStream.SendPacket(packet);
+                    }
+                    UnsentPackets?.Clear();
+                    UnsentPackets = null;
+                }
+            }
+
             if (!IsActive) return;
             if (!IsLocal)
             {
@@ -146,6 +157,7 @@ namespace SupaStuff.Net.ClientSide
         /// </summary>
         public void Dispose()
         {
+            CancelOngoingConnection();
             if (!IsActive) return;
             Disposed = true;
             IsActive = false;

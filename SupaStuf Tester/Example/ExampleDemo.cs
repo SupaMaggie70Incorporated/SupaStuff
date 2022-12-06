@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using SupaStuff.Net;
@@ -41,27 +42,33 @@ namespace SupaStuff.Net.Example
             Main.NetLogger.Log("Initiating Scarry Black Window...");
 
             testServer = new Server<EmptyStruct>(4, port, password);
-            /*
-            testServer.OnClientConnected += (ClientConnection conn) => {
-                conn.SendPacket(new ExamplePacket2());
-            };
-            */
+
+            testServer.StartListening();
             Main.NetLogger.Log("Starting Server at\n     " + NetMain.Host.ToString() + ":" + testServer.Port);
 
 
             Console.ReadKey();
 
             client = new ClientSide.Client(NetMain.Host, port, password);
+            Console.WriteLine("Setup client");
+            client.OnConnected += () => { Console.WriteLine("Connected"); };
+            Console.WriteLine("Updating server & client");
+
+
+            Console.ReadKey();
+
+
+            testServer.Update();
+            Console.WriteLine("Updated server");
+            client.Update();
+            Console.WriteLine("Updated client");
+
             Main.NetLogger.Log("Client Started");
 
-            Task task = new Task(updateLoop);
-            task.Start();
 
             Console.ReadKey();
 
-            Console.ReadKey();
-            client.SendPacket(new ExamplePacket(129));
-            client.SendPacket(new ExamplePacket(129));
+            testServer.Update();
 
             Console.ReadKey();
 
@@ -80,15 +87,6 @@ namespace SupaStuff.Net.Example
 
             Main.NetLogger.Log("Completed Successfully");
 
-        }
-        public void updateLoop()
-        {
-            while (isRunning)
-            {
-                client.Update();
-                testServer.Update();
-                Task.Delay(1000);
-            }
         }
 
 

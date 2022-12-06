@@ -13,7 +13,6 @@ namespace SupaStuff.Net.Packets.BuiltIn
         public readonly byte[] Bytes;
         protected override byte[] Bytify()
         {
-            NetMain.ClientLogger.Log("Bytifying password packet with password " + Encoding.ASCII.GetString(Bytes));
             return Bytes;
         }
         public override void Execute(IClientConnection sender)

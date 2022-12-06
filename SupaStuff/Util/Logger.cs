@@ -13,29 +13,6 @@ namespace SupaStuff.Util
     public struct Logger
     {
         public readonly string Name;
-        /// <summary>
-        /// Contains the methods for logging in unity
-        /// </summary>
-        public struct UnityDebug
-        {
-            /// <summary>
-            /// Delegate for unity based logging
-            /// </summary>
-            /// <param name="message"></param>
-            public delegate void LogDel(object message);
-            /// <summary>
-            /// Logs the message
-            /// </summary>
-            public static LogDel Log { get; internal set; }
-            /// <summary>
-            /// Logs the warning
-            /// </summary>
-            public static LogDel LogWarning { get; internal set; }
-            /// <summary>
-            /// Logs the error
-            /// </summary>
-            public static LogDel LogError { get; internal set; }
-        }
         public static bool IsUnity { get; private set; }
         /// <summary>
         /// Get or create the logger with name.
@@ -52,9 +29,6 @@ namespace SupaStuff.Util
         /// <param name="debug"></param>
         public static void SetUnity()
         {
-            UnityDebug.Log = Debug.Log;
-            UnityDebug.LogWarning = Debug.LogWarning;
-            UnityDebug.LogError = Debug.LogError;
             IsUnity = true;
         }
         /// <summary>
@@ -72,7 +46,7 @@ namespace SupaStuff.Util
         public void Log(object contents)
         {
             string message = "[" + Name + "] " + contents.ToString();
-            if (IsUnity) UnityDebug.Log(message);
+            if (IsUnity) Debug.Log(message);
             else Console.WriteLine(message);
         }
         /// <summary>
@@ -82,7 +56,7 @@ namespace SupaStuff.Util
         public void Warn(object contents)
         {
             string message = "[" + Name + "] " + contents.ToString();
-            if (IsUnity) UnityDebug.LogWarning("[WARNING]" + message);
+            if (IsUnity) Debug.LogWarning("[WARNING]" + message);
             else Console.WriteLine(message);
         }
         /// <summary>
@@ -92,7 +66,7 @@ namespace SupaStuff.Util
         public void Error(object contents)
         {
             string message = "[" + Name + "] " + contents.ToString();
-            if (IsUnity) UnityDebug.LogError("[ERROR]" + message);
+            if (IsUnity) Debug.LogError("[ERROR]" + message);
             else Console.WriteLine(message);
         }
     }
