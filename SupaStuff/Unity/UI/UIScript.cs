@@ -9,7 +9,7 @@ namespace SupaStuff.Unity.UI
     {
         public CanvasMainScript canvas;
         internal UIScript parent = null;
-        public void Awake()
+        public virtual void Awake()
         {
             canvas = transform.parent.GetComponent<CanvasMainScript>();
             if (canvas.CurrentScreen != this) gameObject.SetActive(false);
