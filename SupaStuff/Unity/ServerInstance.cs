@@ -8,7 +8,7 @@ using System.Net;
 using UnityEngine;
 
 using SupaStuff.Net.ServerSide;
-
+using SupaStuff.Net;
 
 namespace SupaStuff.Unity
 {
@@ -23,6 +23,7 @@ namespace SupaStuff.Unity
             {
                 Instance = this;
                 DontDestroyOnLoad(this);
+                if (!NetMain.Initialized) NetMain.Init();
             }
             else
             {

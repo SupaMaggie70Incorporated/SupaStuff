@@ -68,6 +68,10 @@ namespace SupaStuff.Net.Example
 
             Console.ReadKey();
 
+            client.SendPacket(new ExamplePacket(1234));
+
+            Console.ReadKey();
+
             testServer.Update();
 
             Console.ReadKey();

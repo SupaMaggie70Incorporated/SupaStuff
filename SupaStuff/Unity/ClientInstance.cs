@@ -28,6 +28,7 @@ namespace SupaStuff.Unity
             {
                 Instance = this;
                 DontDestroyOnLoad(this);
+                if (!NetMain.Initialized) NetMain.Init();
             }
             else
             {
@@ -46,6 +47,15 @@ namespace SupaStuff.Unity
         }
         public virtual void Initialize(IPAddress address, int port, byte[] password)
         {
+            if(address == null)
+            {
+                throw new ArgumentException("Address cannot be null!");
+            }
+            else if(port < 0 || port > ushort.MaxValue)
+            {
+                throw new ArgumentException("Port must be in the range of [0,65535]!");
+            }
+            if(password == null) password = new byte[0];
             client = new Client(address, port, password);
             client.OnConnected += () =>
             {

@@ -13,6 +13,7 @@ namespace SupaStuff.Net
 {
     public static class NetMain
     {
+        public static bool Initialized = false;
         public static void GetHost()
         {
             var hosts = Dns.GetHostEntry(Dns.GetHostName());
@@ -39,6 +40,7 @@ namespace SupaStuff.Net
             ClientLogger = Logger.GetLogger("Net/Client");
             Packets.PacketTypesFinder.GetTypes();
             GetHost();
+            Initialized = true;
         }
         public static void Update()
         {
