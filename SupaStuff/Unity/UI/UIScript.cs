@@ -8,7 +8,7 @@ namespace SupaStuff.Unity.UI
     public class UIScript : MonoBehaviour
     {
         public CanvasMainScript canvas;
-        internal UIScript parent = null;
+        public UIScript parent = null;
         public virtual void Awake()
         {
             canvas = transform.parent.GetComponent<CanvasMainScript>();

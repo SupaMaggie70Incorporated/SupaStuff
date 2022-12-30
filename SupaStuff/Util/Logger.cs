@@ -12,6 +12,7 @@ namespace SupaStuff.Util
     /// </summary>
     public struct Logger
     {
+        public static Logger DebugLogger = new Logger("DEBUG");
         public readonly string Name;
         public static bool IsUnity { get; private set; }
         /// <summary>
@@ -30,6 +31,8 @@ namespace SupaStuff.Util
         public static void SetUnity()
         {
             IsUnity = true;
+            DebugLogger.Log("Set logging to unity supported Debug.Log");
+            Debug.Log("Temp hopefully I remember to remove this");
         }
         /// <summary>
         /// Creates a logger with the name

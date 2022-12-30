@@ -19,12 +19,11 @@ namespace SupaStuff.Unity
         public Server<T> server;
         protected virtual void Awake()
         {
-            Util.Logger.SetUnity();
-            if (!NetMain.Initialized) NetMain.Init();
             if (Instance == null)
             {
                 Instance = this;
                 DontDestroyOnLoad(this);
+                if (!NetMain.Initialized) NetMain.Init();
             }
             else
             {

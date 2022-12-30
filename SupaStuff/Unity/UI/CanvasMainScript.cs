@@ -22,16 +22,14 @@ namespace SupaStuff.Unity.UI
         public void SwitchToScreen(UIScript obj, bool shouldSetParent)
         {
             if (CurrentScreen != null) CurrentScreen.gameObject.SetActive(false);
-            if (obj == null)
-            {
-                CurrentScreen = null;
-            }
-            else
+
+            if(obj != null)
             {
                 if (shouldSetParent) obj.parent = CurrentScreen;
-                CurrentScreen = obj;
                 obj.gameObject.SetActive(true);
             }
+
+            CurrentScreen = obj;
 
         }
     }
