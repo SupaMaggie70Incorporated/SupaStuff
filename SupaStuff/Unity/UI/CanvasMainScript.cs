@@ -17,7 +17,7 @@ namespace SupaStuff.Unity.UI
         // Update is called once per frame
         void Update()
         {
-
+            if(CurrentScreen.CloseWithEscape && Input.GetKeyDown(KeyCode.Escape)) CurrentScreen.ExitToParent();
         }
         public void SwitchToScreen(UIScript obj, bool shouldSetParent)
         {

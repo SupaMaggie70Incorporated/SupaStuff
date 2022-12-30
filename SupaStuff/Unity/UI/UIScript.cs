@@ -7,8 +7,11 @@ namespace SupaStuff.Unity.UI
 {
     public class UIScript : MonoBehaviour
     {
+        [NonSerialized]
         public CanvasMainScript canvas;
+        [NonSerialized]
         public UIScript parent = null;
+        public bool CloseWithEscape = false;
         public virtual void Awake()
         {
             canvas = transform.parent.GetComponent<CanvasMainScript>();
