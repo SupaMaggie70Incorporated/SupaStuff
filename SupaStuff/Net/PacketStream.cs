@@ -19,16 +19,45 @@ using SupaStuff.Math;
 
 namespace SupaStuff.Net
 {
-    public class PacketStream : IDisposable
+    /// <summary>
+    /// The shared code between client and server that handles the sending/receiving of packets
+    /// </summary>
+    internal class PacketStream : IDisposable
     {
-        internal bool IsServer;
+        /// <summary>
+        /// The client or clientconnection which controls this
+        /// </summary>
+        private IDisposable Controller;
+        /// <summary>
+        /// Whether or not the packetstream should treat packets as being received by the server
+        /// </summary>
+        private bool IsServer;
+        /// <summary>
+        /// Whether or not the packetstream is still active and listening
+        /// </summary>
         internal bool Running = true;
-        internal ServerSide.IClientConnection clientConnection = null;
-        NetworkStream stream;
-        Logger logger = NetMain.NetLogger;
-        //Server only
-        internal DateTime lastCheckedIn = DateTime.UtcNow;
-        public const int MaxUncheckedTime = 10;
+        /// <summary>
+        /// The clientconnection which corresponds to the client if on a server
+        /// </summary>
+        private ServerSide.IClientConnection clientConnection = null;
+        /// <summary>
+        /// The stream data is sent over
+        /// </summary>
+        private NetworkStream stream;
+        /// <summary>
+        /// The logger to be used by messages
+        /// </summary>
+        private Logger logger = NetMain.NetLogger;
+
+        /// <summary>
+        /// Serveronly - When the client last sent a packet
+        /// </summary>
+        private DateTime lastCheckedIn = DateTime.UtcNow;
+
+        /// <summary>
+        /// How long after a client's last packet they should be kicked, in seconds
+        /// </summary>
+        private const int MaxUncheckedTime = 10;
 
         #region Packet buffer
 
@@ -133,13 +162,6 @@ namespace SupaStuff.Net
                 HandleIncomingPacket(packet);
             }
         }
-        private static readonly Type[] builtinPackets = new Type[]
-        {
-            typeof(C2SDisconnectPacket),
-            typeof(S2CKickPacket),
-            typeof(C2SBlankPacket),
-            typeof(C2SWelcomePacket)
-        };
         /// <summary>
         /// Called when a packet is recieved, to execute the packet's code and whatnot
         /// </summary>
@@ -154,10 +176,6 @@ namespace SupaStuff.Net
                     logger.Warn("We recieved a packet other than the C2SWelcomePacket as our first packet, closing connection");
                     Dispose();
                     return;
-                }
-                if (!builtinPackets.Contains(type))
-                {
-                    RecievePacketEvent(packet);
                 }
                 try
                 {
@@ -223,17 +241,22 @@ namespace SupaStuff.Net
         /// <param name="stream">The stream to send and recieve from</param>
         /// <param name="isServer">Whether or not it is a server, used for packet decoding</param>
         /// <param name="onError">The function to be called on errors</param>
-        public PacketStream(NetworkStream stream, bool isServer)
+        internal PacketStream(NetworkStream stream, bool isServer, IDisposable controller)
         {
             this.stream = stream;
             this.IsServer = isServer;
             this.logger = isServer ? NetMain.ServerLogger : NetMain.ClientLogger;
+            Controller = controller;
+        }
+        ~PacketStream()
+        {
+            Dispose();
         }
 
         /// <summary>
         /// Takes the packet queue, iterates through them, removes them if stale, otherwise processes them
         /// </summary>
-        public void Update()
+        internal void Update()
         {
             if (!Running) return;
             DateTime now = DateTime.UtcNow;
@@ -261,13 +284,25 @@ namespace SupaStuff.Net
         /// </summary>
         public void Dispose()
         {
-            DisconnectedEvent();
+            if (!Running) return;
+            Running = false;
+            Controller.Dispose();
+            GC.SuppressFinalize(this);
+            OnDisconnected?.Invoke();
+            if (IsServer)
+            {
+                NetMain.ServerLogger.Warn("Client decided to disconnect!");
+            }
+            else
+            {
+                NetMain.ClientLogger.Warn("Server aborted connection!");
+            }
         }
         /// <summary>
         /// Send a packet
         /// </summary>
         /// <param name="packet"></param>
-        public void SendPacket(Packet packet)
+        internal void SendPacket(Packet packet)
         {
             if (!Running) return;
             try
@@ -281,36 +316,7 @@ namespace SupaStuff.Net
             }
 
         }
-        /// <summary>
-        /// Delegate function for when you recieve a packet
-        /// </summary>
-        /// <param name="packet"></param>
-        /// <returns></returns>
-        /// <summary>
-        /// Called when a packet is recieved
-        /// </summary>
-        public event Action<Packet> OnRecievePacket;
-        private void RecievePacketEvent(Packet packet)
-        {
-            if (OnRecievePacket == null) return;
-            OnRecievePacket.Invoke(packet);
-        }
-        public event Action OnDisconnected;
-
-        private void DisconnectedEvent()
-        {
-            if (!Running) return;
-            Running = false;
-            OnDisconnected?.Invoke();
-            if (IsServer)
-            {
-                NetMain.ServerLogger.Warn("Client decided to disconnect!");
-            }
-            else
-            {
-                NetMain.ClientLogger.Warn("Server aborted connection!");
-            }
-        }
+        internal event Action OnDisconnected;
 
     }
 }

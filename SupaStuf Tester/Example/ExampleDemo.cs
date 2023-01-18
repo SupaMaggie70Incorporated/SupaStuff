@@ -81,7 +81,7 @@ namespace SupaStuff.Net.Example
 
             Console.ReadKey();
 
-            Main.NetLogger.Log("Closing Server..." + testServer.connections.Count);
+            Main.NetLogger.Log("Closing Server..." + testServer.Connections.Count);
             testServer.Dispose();
             isRunning = false;
 

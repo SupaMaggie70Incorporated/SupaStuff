@@ -13,7 +13,7 @@ namespace SupaStuff.Net
 {
     public static class NetMain
     {
-        public static bool Initialized = false;
+        private static bool Initialized = false;
         public static void GetHost()
         {
             var hosts = Dns.GetHostEntry(Dns.GetHostName());
@@ -45,14 +45,8 @@ namespace SupaStuff.Net
         }
         public static void Update()
         {
-            if (NetMain.ServerInstance != null)
-            {
-                NetMain.ServerInstance.Update();
-            }
-            if (NetMain.ClientInstance != null)
-            {
-                NetMain.ClientInstance.Update();
-            }
+            ServerInstance?.Update();
+            ClientInstance?.Update();
         }
     }
 }

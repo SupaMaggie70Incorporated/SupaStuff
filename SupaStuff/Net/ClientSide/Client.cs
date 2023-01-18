@@ -20,7 +20,7 @@ namespace SupaStuff.Net.ClientSide
         public bool IsLocal { get; private set; }
         public bool IsActive { get; internal set; }
         public IClientConnection localConnection { get; private set; }
-        PacketStream packetStream;
+        internal PacketStream packetStream;
 
         public IPAddress Address;
         public readonly int Port;
@@ -124,7 +124,7 @@ namespace SupaStuff.Net.ClientSide
                     WasConnected = true;
                     IsActive = true;
                     Stream = TcpClient.GetStream();
-                    packetStream = new PacketStream(Stream, false);
+                    packetStream = new PacketStream(Stream, false, this);
                     packetStream.OnDisconnected += Dispose;
                     SendPacket(new C2SWelcomePacket());
                     NetMain.ClientLogger.Log("Client successfully connected!");

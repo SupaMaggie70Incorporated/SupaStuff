@@ -13,67 +13,104 @@ namespace SupaStuff.Net.ServerSide
 {
     public class Server<T> : IServer
     {
-        public TcpListener Listener { get; private set; }
-        public int Port = 12345;
+        private TcpListener listener;
+        public int Port {get; private set;}
         public bool Active { get; private set; }
         public LocalClientConnection<T> LocalConnection { get; private set; }
-        public List<IClientConnection> connections { get; private set; }
-        public readonly int MaxConnections;
-        public readonly byte[] Password;
+        internal List<IClientConnection> _connections;
+        public List<IClientConnection> Connections { 
+            get
+            {
+                return new List<IClientConnection>(_connections);
+            }
+            private set{
+                _connections = value;
+            }
+        }
+        public int MaxConnections { get; private set; }
+        private byte[] _password;
+        public byte[] Password {
+            get 
+            { 
+                return (byte[])_password.Clone(); 
+            }
+            set
+            {
+                _password = value;
+            }
+        }
         public byte[] GetPassword() => Password;
         public bool IsActive() => Active;
         public IClientConnection GetLocalConnection() => LocalConnection;
-        public List<IClientConnection> GetConnections() => connections;
-        public bool Listening = false;
+        public List<IClientConnection> GetConnections() => _connections;
+        private bool _listening;
+        public bool Listening
+        {
+            get
+            {
+                return _listening;
+            }
+            set
+            {
+                if (value && !_listening) StartListening();
+                else if (!value && _listening) StopListening();
+            }
+        }
+
         public Server(int maxConnections, int port, byte[] password)
         {
-            this.Password = password;
+            this._password = password;
             this.Port = port;
             Active = true;
             NetMain.ServerInstance = this;
             this.MaxConnections = maxConnections;
-            connections = new List<IClientConnection>(maxConnections);
-            Listener = new TcpListener(NetMain.Host, port);
+            _connections = new List<IClientConnection>(maxConnections);
+            listener = new TcpListener(NetMain.Host, port);
+            _listening = false;
             NetMain.ServerLogger.Log("Server started");
             LocalConnection = LocalClientConnection<T>.LocalClient(this);
-            connections.Add(LocalConnection);
+            _connections.Add(LocalConnection);
             NetMain.NetLogger.Log("Server started!");
+        }
+        ~Server()
+        {
+            Dispose();
         }
         public void StartListening()
         {
-            Listener.Start();
-            Listening = true;
+            listener.Start();
+            _listening = true;
         }
         public void StopListening()
         {
-            Listener.Stop();
-            Listening = false;
+            listener.Stop();
+            _listening = false;
         }
 
         public void Update()
         {
             if (!Active) return;
-            if(Listening)
+            if(_listening)
             {
-                while (Listener.Pending())
+                while (listener.Pending())
                 {
-                    ClientConnected(new ClientConnection<T>(Listener.AcceptTcpClient()));
+                    ClientConnected(new ClientConnection<T>(listener.AcceptTcpClient()));
                 }
             }
-            for (int i = 0; i < connections.Count; i++)
+            for (int i = 0; i < _connections.Count; i++)
             {
-                IClientConnection connection = connections[i];
+                IClientConnection connection = _connections[i];
 
 
                 if (connection == null)
                 {
-                    connections.RemoveAt(i);
+                    _connections.RemoveAt(i);
                     i--;
                 }
                 else if (!Active)
                 {
                     NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " because they should've already been kicked, as the server is shut down");
-                    connections[i].Dispose();
+                    _connections[i].Dispose();
                     
                     i--;
                     continue;
@@ -89,15 +126,15 @@ namespace SupaStuff.Net.ServerSide
                 }
             }
         }
-        internal virtual void ClientConnected(ClientConnection<T> connection)
+        internal void ClientConnected(ClientConnection<T> connection)
         {
             try
             {
                 NetMain.ServerLogger.Log("Attempted connection from " + connection.Address + "!");
-                if (connections.Count + 1 < MaxConnections)
+                if (_connections.Count + 1 < MaxConnections)
                 {
-                    connections.Add(connection);
-                    ClientConnectedEvent(connection);
+                    _connections.Add(connection);
+                    OnClientConnected?.Invoke(connection);
                 }
                 else
                 {
@@ -118,35 +155,26 @@ namespace SupaStuff.Net.ServerSide
         {
             if (!Active) return;
             Active = false;
+            GC.SuppressFinalize(this);
             //List<ClientConnection> connections = this.connections;
             //this.connections = null;
-            foreach (IClientConnection connection in connections)
+            foreach (IClientConnection connection in _connections)
             {
                 if (connection == null || !connection.IsActive()) return;
                 NetMain.ServerLogger.Log("Closing connection to " + connection.GetAddress() + " because we are shutting down the server");
                 Kick(connection, "Server is shutting down.");
 
             }
-            Listener.Stop();
+            listener.Stop();
             
-            connections.Clear();
+            _connections.Clear();
             NetMain.NetLogger.Log("Closing server");
         }
         public event Action<IClientConnection> OnClientConnected;
-        private void ClientConnectedEvent(ClientConnection<T> connection)
-        {
-            if (OnClientConnected == null) return;
-            OnClientConnected.Invoke(connection);
-        }
         public void SendToAll(Packet packet)
         {
             if (!IsActive()) return;
-            IClientConnection[] _connections = new IClientConnection[connections.Count];
-            for (int i = 0; i < _connections.Length; i++)
-            {
-                _connections[i] = connections[i];
-            }
-            for (int i = 0; i < _connections.Length; i++)
+            for (int i = 0; i < _connections.Count; i++)
             {
                 IClientConnection connection = _connections[i];
                 try
@@ -169,7 +197,7 @@ namespace SupaStuff.Net.ServerSide
         {
             NetMain.NetLogger.Log("Kicking " + connection.GetAddress() + " for reason: " + message);
             connection.Kick(message);
-            foreach (IClientConnection conn in connections)
+            foreach (IClientConnection conn in _connections)
             {
                 if (conn == connection)
                 {
@@ -186,7 +214,7 @@ namespace SupaStuff.Net.ServerSide
         {
             NetMain.ServerLogger.Log("Kicking " + connection.GetAddress() + " without telling them");
             connection.Dispose();
-            foreach(IClientConnection conn in connections)
+            foreach(IClientConnection conn in _connections)
             {
                 if (conn == connection)
                 {
@@ -202,9 +230,9 @@ namespace SupaStuff.Net.ServerSide
         /// <returns></returns>
         public IClientConnection MakeLocalConnection()
         {
-            if (connections.Count + 1 == MaxConnections) return null;
+            if (_connections.Count + 1 == MaxConnections) return null;
             IClientConnection connection = LocalClientConnection<T>.LocalClient(this);
-            connections.Add(connection);
+            _connections.Add(connection);
             return connection;
         }
 

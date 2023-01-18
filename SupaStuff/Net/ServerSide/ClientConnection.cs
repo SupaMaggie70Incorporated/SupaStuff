@@ -21,7 +21,7 @@ namespace SupaStuff.Net.ServerSide
         public TcpClient TcpClient;
         protected NetworkStream Stream;
         public bool Active { get; protected set; }
-        public PacketStream PacketStream { get; protected set; }
+        internal PacketStream PacketStream { get; set; }
         public IPAddress Address { get; protected set; }
 
         public virtual IPAddress GetAddress() => Address;
@@ -41,7 +41,7 @@ namespace SupaStuff.Net.ServerSide
             this.TcpClient = tcpClient;
             tcpClient.NoDelay = false;
             Stream = tcpClient.GetStream();
-            PacketStream = new PacketStream(Stream, true);
+            PacketStream = new PacketStream(Stream, true, this);
             PacketStream.clientConnection = this;
             PacketStream.OnDisconnected += () =>
             {
@@ -73,7 +73,6 @@ namespace SupaStuff.Net.ServerSide
         {
             if (!Active)
             {
-                Dispose();
                 return;
             }
 
@@ -84,9 +83,11 @@ namespace SupaStuff.Net.ServerSide
                 {
                     NetMain.ServerLogger.Warn("Shutting down connection to " + Address + " because they were unable to authorize themselves");
                     Dispose();
+                    
                 }
             }
         }
+
         /// <summary>
         /// Kick the client from the server with a message
         /// </summary>
@@ -103,7 +104,6 @@ namespace SupaStuff.Net.ServerSide
             Stream?.Close();
             Stream?.Dispose();
             PacketStream?.Dispose();
-            Active = false;
             DisposeEvent();
         }
         public event Action OnDispose;

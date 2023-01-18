@@ -9,7 +9,7 @@ namespace SupaStuff.Unity.UI
     {
         public UIScript CurrentScreen = null;
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             SwitchToScreen(CurrentScreen, true);
         }
