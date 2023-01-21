@@ -14,8 +14,7 @@ using SupaStuff.Net.Packets.BuiltIn;
 
 using SupaStuff.Util;
 using SupaStuff.Math;
-
-
+using SupaStuff.Net.ServerSide;
 
 namespace SupaStuff.Net
 {
@@ -247,6 +246,7 @@ namespace SupaStuff.Net
             this.IsServer = isServer;
             this.logger = isServer ? NetMain.ServerLogger : NetMain.ClientLogger;
             Controller = controller;
+            clientConnection = controller as IClientConnection;
         }
         ~PacketStream()
         {

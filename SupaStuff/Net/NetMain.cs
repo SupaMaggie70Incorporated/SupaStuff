@@ -35,6 +35,7 @@ namespace SupaStuff.Net
         public static Logger ClientLogger { get; private set; }
         public static void Init()
         {
+            if(Initialized) return;
             NetLogger = Logger.GetLogger("Net/Main");
             ServerLogger = Logger.GetLogger("Net/Server");
             ClientLogger = Logger.GetLogger("Net/Client");

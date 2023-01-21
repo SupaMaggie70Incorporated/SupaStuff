@@ -9,13 +9,17 @@ using SupaStuff.Net.Packets;
 using SupaStuff.Net.Packets.BuiltIn;
 using SupaStuff.Math;
 
-
 namespace SupaStuff.Net.ServerSide
 {
+    /// <summary>
+    /// The serverside class representing a connection to an individual client.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ClientConnection<T> : IClientConnection
     {
-        public Server<T> ConnectedServer;
-
+        /// <summary>
+        /// Something that can be associated with each client connection
+        /// </summary>
         public T Data = default(T);
 
         public TcpClient TcpClient;
@@ -29,20 +33,17 @@ namespace SupaStuff.Net.ServerSide
         public virtual bool IsActive() => Active;
         public virtual void FinishAuth() => FinishedAuth = true;
         public virtual bool AuthFinished() => FinishedAuth;
-        public IServer GetServer() => ConnectedServer;
 
         internal DateTime ConnectionStartTime;
         internal bool FinishedAuth = false;
 
         public ClientConnection(TcpClient tcpClient)
         {
-            ConnectedServer = NetMain.ServerInstance as Server<T>;
             Active = true;
             this.TcpClient = tcpClient;
             tcpClient.NoDelay = false;
             Stream = tcpClient.GetStream();
             PacketStream = new PacketStream(Stream, true, this);
-            PacketStream.clientConnection = this;
             PacketStream.OnDisconnected += () =>
             {
                 NetMain.ServerLogger.Log("Kicking " + Address + " because they already disconnected");
@@ -99,7 +100,6 @@ namespace SupaStuff.Net.ServerSide
             if (!Active) return;
             Active = false;
             NetMain.ServerLogger.Log("Connection to client " + Address + " terminated");
-            ConnectedServer.Kick(this);
             TcpClient?.Dispose();
             Stream?.Close();
             Stream?.Dispose();

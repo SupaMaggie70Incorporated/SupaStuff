@@ -23,6 +23,5 @@ namespace SupaStuff.Net.ServerSide
         void RecievePacket(Packets.Packet packet);
         void FinishAuth();
         bool AuthFinished();
-        IServer GetServer();
     }
 }

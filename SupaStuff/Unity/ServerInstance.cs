@@ -23,7 +23,7 @@ namespace SupaStuff.Unity
             {
                 Instance = this;
                 DontDestroyOnLoad(this);
-                if (!NetMain.Initialized) NetMain.Init();
+                NetMain.Init();
             }
             else
             {

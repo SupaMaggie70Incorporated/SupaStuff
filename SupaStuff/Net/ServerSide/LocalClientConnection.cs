@@ -14,6 +14,7 @@ namespace SupaStuff.Net.ServerSide
 {
     public class LocalClientConnection<T> : ClientConnection<T>
     {
+        internal Server<T> ConnectedServer;
         public ClientSide.Client Client { get; internal set; }
         public override IPAddress GetAddress() => new IPAddress(new byte[] { 127, 0, 0, 1 });
         public override bool IsLocal() => true;
@@ -64,7 +65,7 @@ namespace SupaStuff.Net.ServerSide
         {
             if (Disposed) return;
             Disposed = true;
-            ConnectedServer.Kick(this);
+            ConnectedServer?.Kick(this);
         }
     }
 }

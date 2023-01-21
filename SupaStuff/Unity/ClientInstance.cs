@@ -26,7 +26,7 @@ namespace SupaStuff.Unity
         protected virtual void Awake()
         {
             Util.Logger.SetUnity();
-            if (!NetMain.Initialized) NetMain.Init();
+            NetMain.Init();
             if (Instance == null)
             {
                 Instance = this;
